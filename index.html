@@ -243,6 +243,7 @@ tr.lead .pos{color:var(--yellow)}
 @media(min-width:760px){.fa-grid{grid-template-columns:repeat(3,1fr)}}
 .fa-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:16px 12px;text-align:center}
 .fa-pos{display:inline-block;font-size:10px;font-weight:800;letter-spacing:2px;color:var(--yellow);border:1px solid rgba(247,224,18,.45);border-radius:99px;padding:4px 12px;margin-bottom:10px}
+.fa-pos-na{color:rgba(255,255,255,.45);border-color:rgba(255,255,255,.18)}
 .fa-name{font-weight:800;font-size:15px;letter-spacing:.3px}
 .fa-team{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;color:var(--muted);font-size:12.5px}
 .fa-team img{width:32px;height:32px;object-fit:contain}
@@ -653,29 +654,96 @@ let tradeFilter = "ALL";
 let faPos = "ALL";
 const FA_POSITIONS = [["ALL","TODOS"],["BASE","BASES"],["ESCOLTA","ESCOLTAS"],["ALERO","ALEROS"],["ALA-PIVOT","ALA-PÍVOTS"],["PIVOT","PÍVOTS"]];
 const FA_POS_NAME = {BASE:"BASE",ESCOLTA:"ESCOLTA",ALERO:"ALERO","ALA-PIVOT":"ALA-PÍVOT",PIVOT:"PÍVOT"};
-const FA_URL = "https://www.primerahora.com/deportes/baloncesto/notas/que-jugadores-entraran-a-la-agencia-libre-del-bsn-conoce-la-lista-hasta-ahora/";
 const FA_PLAYERS = [
   {n:"Alex Abreu", t:"Osos de Manatí", pos:"BASE"},
-  {n:"Gaby Belardo", t:"Osos de Manatí", pos:"BASE"},
-  {n:"KJ Maura", t:"Mets de Guaynabo", pos:"BASE"},
-  {n:"Jonathan García", t:"Indios de Mayagüez", pos:"BASE"},
+  {n:"Alexis Colón", pos:"ESCOLTA"},
+  {n:"Alexis Negrón", pos:"ESCOLTA"},
+  {n:"Algenis Quintana", pos:"BASE"},
+  {n:"Alonzo Ortiz-Traylor", pos:"ALERO"},
   {n:"Benito Santiago Jr.", t:"Indios de Mayagüez", pos:"ESCOLTA"},
-  {n:"Juan Pablo Piñeiro", t:"Capitanes de Arecibo", pos:"ESCOLTA"},
-  {n:"Fernando Caballero", t:"Leones de Ponce", pos:"ESCOLTA"},
-  {n:"David Huertas", t:"Cangrejeros de Santurce", pos:"ESCOLTA", nota:"Sujeto a opción de equipo"},
-  {n:"Manny Camper", t:"Santeros de Aguada", pos:"ALERO", nota:"Estado por definirse"},
-  {n:"Tyler Polo", t:"Cangrejeros de Santurce", pos:"ALERO"},
-  {n:"Xavier Zambrana", t:"Cangrejeros de Santurce", pos:"ALERO"},
-  {n:"Enrique Ramos", t:"Leones de Ponce", pos:"ALERO"},
+  {n:"Benjamín Colón", pos:"ALA-PIVOT"},
+  {n:"Brandon Davis", pos:"BASE"},
+  {n:"Brian Vázquez"},
+  {n:"Carlos Colón", pos:"ALERO"},
+  {n:"Carlos Santiago"},
   {n:"Chris Gastón", t:"Indios de Mayagüez", pos:"ALA-PIVOT"},
+  {n:"Chris Pérez", pos:"ALERO"},
+  {n:"Darius Spotville"},
+  {n:"David Huertas", t:"Cangrejeros de Santurce", pos:"ESCOLTA", nota:"Sujeto a opción de equipo"},
+  {n:"Denis Clemente", pos:"BASE"},
+  {n:"Dixon Oviedo"},
+  {n:"Douglas Mills", pos:"ESCOLTA"},
+  {n:"Eduardo Peralta", pos:"ALERO"},
+  {n:"Edube Ezeagwula"},
+  {n:"Edwin Rivera", pos:"ALA-PIVOT"},
+  {n:"EJ Crawford", pos:"ALERO"},
+  {n:"Enrique Ramos", t:"Leones de Ponce", pos:"ALERO"},
+  {n:"Ernesto Rodríguez"},
+  {n:"Ezequiel Colón"},
+  {n:"Felix Rivera Jr", pos:"ALA-PIVOT"},
+  {n:"Fernando Caballero", t:"Leones de Ponce", pos:"ESCOLTA"},
+  {n:"Francis Han", pos:"ESCOLTA"},
+  {n:"Gaby Belardo", t:"Osos de Manatí", pos:"BASE"},
+  {n:"Gary Díaz", pos:"ESCOLTA"},
+  {n:"Gerardo Texeira", t:"Mets de Guaynabo", pos:"ALA-PIVOT"},
+  {n:"Gilberto Clavell", pos:"ALERO"},
+  {n:"Giovanny Martínez", pos:"PIVOT"},
+  {n:"Glenn Sanabria", pos:"ESCOLTA"},
+  {n:"Goree Venable", pos:"ALA-PIVOT"},
+  {n:"Héctor Maldonado", pos:"ESCOLTA"},
+  {n:"Isaiah Manderson", pos:"PIVOT"},
+  {n:"Jahvari Josiah", pos:"ALERO"},
+  {n:"Jatsiel Colón", pos:"PIVOT"},
+  {n:"Javier González", pos:"BASE"},
+  {n:"Jeremiah Hernández", pos:"ESCOLTA"},
+  {n:"Jeriel Zayas", pos:"BASE"},
+  {n:"Jermaine Bishop", pos:"BASE"},
+  {n:"Joe Burgos", pos:"ESCOLTA"},
+  {n:"Jonathan García", t:"Indios de Mayagüez", pos:"BASE"},
+  {n:"Jonathan Ocasio"},
+  {n:"Jordan Glover", pos:"ESCOLTA"},
+  {n:"Jorge Elier González"},
+  {n:"Jorge Matos", pos:"ALERO"},
+  {n:"Joseph Bull", pos:"ALERO"},
+  {n:"Joseph Pérez", pos:"ALA-PIVOT"},
+  {n:"Joshua Colón"},
+  {n:"José Pérez", pos:"ESCOLTA"},
+  {n:"José Rodríguez", pos:"ALERO"},
+  {n:"José Román", pos:"ALERO"},
+  {n:"Juan Pablo Piñeiro", t:"Capitanes de Arecibo", pos:"ESCOLTA"},
+  {n:"Kenneth I. Rodríguez"},
+  {n:"Kenneth Santos", pos:"ALERO"},
+  {n:"Khary Mauras", pos:"ESCOLTA"},
+  {n:"KJ Maura", t:"Mets de Guaynabo", pos:"BASE"},
+  {n:"Kleon Penn", pos:"PIVOT"},
+  {n:"Lee Vázquez"},
+  {n:"Luis González"},
+  {n:"Luis Henríquez", pos:"ALERO"},
+  {n:"Luis López", pos:"BASE"},
+  {n:"Manny Camper", t:"Santeros de Aguada", pos:"ALERO", nota:"Estado por definirse"},
+  {n:"Marcel Souberbielle", pos:"ALERO"},
+  {n:"Melsahn Basabe", pos:"ALA-PIVOT"},
+  {n:"Miguel Arnold Febres"},
+  {n:"Miguel Miranda", pos:"ALA-PIVOT"},
+  {n:"Nathaniel Butler"},
+  {n:"Neftalí Acevedo", pos:"BASE"},
+  {n:"Nick León", pos:"ESCOLTA"},
+  {n:"Robert Harris", pos:"ESCOLTA"},
+  {n:"Robert Nieves"},
+  {n:"Steven Miró", pos:"ESCOLTA"},
+  {n:"Tyler Hawkins", pos:"BASE"},
+  {n:"Tyler Polo", t:"Cangrejeros de Santurce", pos:"ALERO"},
   {n:"Wilfredo Rodríguez", t:"Mets de Guaynabo", pos:"ALA-PIVOT"},
-  {n:"Gerardo Texeira", t:"Mets de Guaynabo", pos:"ALA-PIVOT"}
+  {n:"William Martínez", pos:"ESCOLTA"},
+  {n:"Wilmer Lugo", pos:"BASE"},
+  {n:"Xavier Zambrana", t:"Cangrejeros de Santurce", pos:"ALERO"},
+  {n:"Ángel Oquendo", pos:"ESCOLTA"}
 ];
 function faCard(p){
   return `<div class="fa-card rv">
-    <span class="fa-pos">${FA_POS_NAME[p.pos]}</span>
+    ${p.pos?`<span class="fa-pos">${FA_POS_NAME[p.pos]}</span>`:`<span class="fa-pos fa-pos-na">POR DEF.</span>`}
     <div class="fa-name">${esc(p.n)}</div>
-    <div class="fa-team">${tlogo(p.t)}<span>${esc(p.t)}</span></div>
+    ${p.t?`<div class="fa-team">${tlogo(p.t)}<span>${esc(p.t)}</span></div>`:""}
     ${p.nota?`<div class="fa-nota">${esc(p.nota)}</div>`:""}
   </div>`;
 }
@@ -692,7 +760,7 @@ function renderFA(){
     <div class="fa-head"><span class="chip">AGENCIA LIBRE 2026</span><span class="fa-count">${FA_PLAYERS.length} JUGADORES</span></div>
     <div class="tfilter fafilters">${pills}</div>
     ${grid}
-    <p class="fa-foot">Fuente: <a href="${FA_URL}" target="_blank" rel="noopener">Primera Hora</a> · Vaqueros y Atléticos no respondieron; Gigantes y Criollos no tendrán agentes libres; Piratas con cláusula en todos sus contratos.</p>
+    <p class="fa-foot">Fuente: <a href="https://www.guerrabsn.com/jugadores/agentes-libres" target="_blank" rel="noopener">La Guerra del BSN</a> · Posiciones verificadas con prensa y bases de datos.</p>
   </div>`;
 }
 function faTeaser(){
@@ -700,7 +768,7 @@ function faTeaser(){
     <div class="trade-top"><span class="chip">AGENCIA LIBRE</span><span class="trade-date">SEP 2026</span></div>
     <div class="fa-teaser-n">${FA_PLAYERS.length}</div>
     <h3>Agentes libres 2026</h3>
-    <p class="trade-det">Toca para verlos uno por uno y filtrar por posición: bases, escoltas, aleros y ala-pívots.</p>
+    <p class="trade-det">Toca para verlos uno por uno y filtrar por posición: bases, escoltas, aleros, ala-pívots y pívots.</p>
   </article>`;
 }
 const SWAP_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7h13m0 0l-3-3m3 3l-3 3M16 17H3m0 0l3 3m-3-3l3-3"/></svg>`;
