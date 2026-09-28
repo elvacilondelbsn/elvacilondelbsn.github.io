@@ -234,6 +234,10 @@ tr.lead .pos{color:var(--yellow)}
 .swap-side img{width:54px;height:54px;object-fit:contain;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5));margin:0 auto;display:block}
 .swap-side .tlogo-none{margin:0 auto}
 .fa-board{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:18px;padding:18px}
+.fa-band{margin:24px calc(50% - 50vw) 0;padding:30px 0 28px;position:relative;background:radial-gradient(700px 240px at 12% 0%,rgba(247,224,18,.09),transparent 60%),radial-gradient(760px 280px at 88% 100%,rgba(6,105,212,.16),transparent 60%),linear-gradient(180deg,#071a3c,#040f28);border-top:1px solid rgba(247,224,18,.3);border-bottom:1px solid rgba(247,224,18,.3)}
+.fa-band::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,transparent 0 26px,rgba(255,255,255,.025) 26px 27px);pointer-events:none}
+.fa-band-inner{max-width:1120px;margin:0 auto;padding:0 20px;position:relative}
+.fa-band .fa-board{background:none;border:0;border-radius:0;padding:0}
 .fa-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap}
 .fa-head .chip{margin:0}
 .fa-count{font-family:'Oswald';font-size:12px;letter-spacing:2px;color:var(--muted)}
@@ -282,7 +286,7 @@ tr.lead .pos{color:var(--yellow)}
 .tcard-top{width:100%;display:flex;justify-content:space-between;align-items:center;font-family:'Oswald';font-size:10px;letter-spacing:2px;color:rgba(250,250,250,.6);position:relative;z-index:2}
 .tlogo-big{width:clamp(64px,48%,92px);aspect-ratio:1;object-fit:contain;background:#fff;border-radius:22px;padding:10px;margin:12px 0 8px;box-shadow:0 12px 30px rgba(0,0,0,.5);position:relative;z-index:2}
 .tfront h3{font-family:'Oswald';font-size:clamp(14px,4vw,18px);letter-spacing:.5px;line-height:1.15;position:relative;z-index:2;min-height:2.3em;display:flex;align-items:center;justify-content:center}
-.tfront .champ-tag{margin:6px 0 0;position:relative;z-index:2;font-size:10px}
+.tfront .champ-tag{position:absolute;top:0;left:50%;transform:translateX(-50%);margin:0;z-index:5;font-size:9px;letter-spacing:2px;font-weight:800;padding:5px 14px 7px;border-radius:0 0 9px 9px;background:linear-gradient(180deg,#ffe45e,#f7e012 60%,#d9a400);color:#231a00;box-shadow:0 4px 12px rgba(0,0,0,.45);white-space:nowrap}
 .tconf{font-family:'Oswald';font-size:10px;letter-spacing:3px;color:var(--muted);margin-top:6px;position:relative;z-index:2}
 .tfront-foot{margin-top:auto;width:100%;position:relative;z-index:2;padding-top:8px}
 .trec3{font-family:'Oswald';font-size:14px;letter-spacing:1px;color:var(--muted)}
@@ -369,7 +373,7 @@ footer ul a:hover{color:var(--yellow)}
   .tfront{padding:12px 10px 10px}
   .tlogo-big{width:62px;padding:8px;margin:10px 0 8px;border-radius:18px}
   .tfront h3{font-size:15px}
-  .tfront .champ-tag{font-size:9px;margin-top:6px}
+  .tfront .champ-tag{font-size:8px;letter-spacing:1.5px;padding:4px 11px 6px}
   .giant{font-size:34vw}
   .hero{min-height:88vh}
   .foot-grid{grid-template-columns:1fr}
@@ -762,12 +766,12 @@ function renderFA(){
   const grid = list.length
     ? `<div class="fa-scroll">DESLIZA →</div><div class="fa-grid">${list.map(faCard).join("")}</div>`
     : `<div class="fa-empty">Sin agentes libres registrados en esta posición.</div>`;
-  return `<div class="fa-board">
+  return `<div class="fa-band"><div class="fa-band-inner"><div class="fa-board">
     <div class="fa-head"><span class="chip">AGENCIA LIBRE 2026</span><span class="fa-count">${FA_PLAYERS.length} JUGADORES</span></div>
     <div class="tfilter fafilters">${pills}</div>
     ${grid}
-    <p class="fa-foot">Fuente: <a href="https://www.guerrabsn.com/jugadores/agentes-libres" target="_blank" rel="noopener">La Guerra del BSN</a> · Posiciones verificadas con prensa y bases de datos.</p>
-  </div>`;
+    <p class="fa-foot">Posiciones verificadas con prensa y bases de datos.</p>
+  </div></div></div>`;
 }
 function faTeaser(){
   return `<article class="trade rv fa-teaser" id="faTeaser">
