@@ -629,6 +629,6 @@ function renderPostList(){
 document.querySelectorAll(".modal-back").forEach(m=>m.addEventListener("click",e=>{ if(e.target===m) closeModals(); }));
 renderScores(); renderBento(); showConf("A"); renderTeams(); renderPoll(); renderMarquee(); observeRv();
 </script>
-<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js");});}</script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.addEventListener("controllerchange",function(){window.location.reload();});window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js");});}</script>
 </body>
 </html>
