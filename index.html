@@ -219,6 +219,13 @@ footer h4{font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:3px;marg
   .side-item img{width:96px}
 }
 </style>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#051d49">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Vacilón BSN">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 </head>
 <body>
 <div class="topbar">
@@ -556,5 +563,6 @@ function deletePost(id){
 document.querySelectorAll('.modal-back').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)closeModals()}));
 render();
 </script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js");});}</script>
 </body>
 </html>
