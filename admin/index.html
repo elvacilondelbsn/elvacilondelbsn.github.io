@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Admin · EL VACILÓN DEL BSN</title>
+<meta name="theme-color" content="#051d49">
+<style>
+:root{
+  --navy:#051d49; --yellow:#f7e012; --red:#f43e3c; --blue:#0669d4;
+  --green:#57a048; --bg:#070f24; --card:#0d1830; --line:#1c2a4d;
+  --txt:#f2f5fb; --mut:#9aa7c4;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;min-height:100vh}
+.wrap{max-width:860px;margin:0 auto;padding:20px 16px 60px}
+.top{display:flex;align-items:center;gap:12px;padding:14px 0 20px}
+.logo{width:44px;height:44px;border-radius:12px;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--navy);font-size:20px}
+h1{font-size:20px;margin:0;letter-spacing:.5px}
+h1 small{display:block;font-size:12px;color:var(--mut);font-weight:500;letter-spacing:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px}
+label{display:block;font-size:13px;color:var(--mut);margin:14px 0 6px;letter-spacing:.4px}
+input[type=text],input[type=password],input[type=number],textarea,select{
+  width:100%;background:#0a1328;border:1px solid var(--line);border-radius:10px;
+  color:var(--txt);font-size:16px;padding:12px;font-family:inherit}
+textarea{min-height:110px;resize:vertical}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--yellow)}
+.btn{display:inline-block;border:none;border-radius:12px;font-size:16px;font-weight:700;
+  padding:14px 22px;cursor:pointer;font-family:inherit}
+.btn-y{background:var(--yellow);color:var(--navy);width:100%}
+.btn-r{background:transparent;color:var(--red);border:1px solid var(--red);padding:10px 16px;font-size:14px}
+.btn-g{background:transparent;color:var(--green);border:1px solid var(--green);padding:10px 16px;font-size:14px}
+.btn-s{background:#1a2547;color:var(--txt);padding:10px 16px;font-size:14px;border:1px solid var(--line)}
+.btn:active{transform:scale(.98)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row .btn{flex:1;min-width:120px}
+.err{background:#3a1215;border:1px solid var(--red);color:#ffb3b1;border-radius:10px;padding:12px;margin:12px 0;font-size:14px;display:none}
+.okmsg{background:#0f2f1a;border:1px solid var(--green);color:#b9e8c4;border-radius:10px;padding:12px;margin:12px 0;font-size:14px;display:none}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 12px;-webkit-overflow-scrolling:touch}
+.tab{flex:0 0 auto;border:1px solid var(--line);background:var(--card);color:var(--mut);
+  border-radius:999px;padding:10px 18px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+.tab.on{background:var(--yellow);color:var(--navy);border-color:var(--yellow)}
+.item{display:flex;gap:12px;align-items:center;background:#0a1328;border:1px solid var(--line);
+  border-radius:12px;padding:12px;margin-bottom:10px}
+.item img{width:56px;height:56px;object-fit:cover;border-radius:10px;background:#16213c;flex:none}
+.item .tt{flex:1;min-width:0}
+.item .tt b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .tt span{font-size:12px;color:var(--mut)}
+.badge{font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;letter-spacing:.5px}
+.badge.pub{background:#0f2f1a;color:#7fd795}
+.badge.nopub{background:#3a2a10;color:#f7c948}
+.ibtn{border:1px solid var(--line);background:#16213c;color:var(--txt);border-radius:10px;
+  padding:10px 12px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.ibtn.del{color:#ff8f8d;border-color:#5c1a1c}
+.checkrow{display:flex;align-items:center;gap:10px;margin-top:14px}
+.checkrow input{width:22px;height:22px;accent-color:var(--yellow)}
+.preview{max-width:100%;border-radius:10px;margin-top:8px;display:none}
+.hidden{display:none!important}
+.hint{font-size:13px;color:var(--mut);margin-top:8px;line-height:1.5}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.linkbtn{background:none;border:none;color:var(--mut);font-size:14px;cursor:pointer;font-family:inherit;text-decoration:underline}
+.empty{text-align:center;color:var(--mut);padding:30px 10px;font-size:14px}
+.spin{display:inline-block;width:18px;height:18px;border:3px solid var(--line);border-top-color:var(--yellow);border-radius:50%;animation:sp 1s linear infinite;vertical-align:-4px;margin-right:8px}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="logo">V</div>
+    <h1>EL VACILÓN DEL BSN<small>PANEL DE ADMINISTRACIÓN</small></h1>
+  </div>
+
+  <!-- SETUP INICIAL -->
+  <div id="scr-setup" class="hidden">
+    <div class="card">
+      <h2 style="margin:0 0 6px;font-size:18px">Configuración inicial</h2>
+      <p class="hint">Crea tu usuario de administrador. Solo se hace una vez.</p>
+      <div class="err" id="setup-err"></div>
+      <label>Usuario</label>
+      <input type="text" id="su-user" autocomplete="username" placeholder="Ej: admin">
+      <label>Contraseña (mínimo 8 caracteres)</label>
+      <input type="password" id="su-pass" autocomplete="new-password" placeholder="••••••••">
+      <label>Llave de configuración</label>
+      <input type="text" id="su-key" autocomplete="off" placeholder="La llave que te dio Ángel">
+      <div style="height:16px"></div>
+      <button class="btn btn-y" id="btn-setup">Crear mi cuenta</button>
+    </div>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="scr-login" class="hidden">
+    <div class="card">
+      <h2 style="margin:0 0 6px;font-size:18px">Entrar</h2>
+      <div class="err" id="login-err"></div>
+      <label>Usuario</label>
+      <input type="text" id="li-user" autocomplete="username">
+      <label>Contraseña</label>
+      <input type="password" id="li-pass" autocomplete="current-password">
+      <div style="height:16px"></div>
+      <button class="btn btn-y" id="btn-login">Entrar</button>
+    </div>
+  </div>
+
+  <!-- PANEL -->
+  <div id="scr-panel" class="hidden">
+    <div class="topbar">
+      <span class="hint" id="who" style="margin:0"></span>
+      <button class="linkbtn" id="btn-logout">Salir</button>
+    </div>
+    <div class="tabs" id="tabs"></div>
+    <div id="list"></div>
+    <div class="card hidden" id="form-card">
+      <h2 style="margin:0 0 4px;font-size:18px" id="form-title">Nuevo</h2>
+      <div class="err" id="form-err"></div>
+      <div class="okmsg" id="form-ok"></div>
+      <div id="form-fields"></div>
+      <div style="height:16px"></div>
+      <div class="row">
+        <button class="btn btn-y" id="btn-save">Guardar</button>
+        <button class="btn btn-s" id="btn-cancel">Cancelar</button>
+      </div>
+    </div>
+    <div id="fab-row" style="margin-top:6px">
+      <button class="btn btn-y" id="btn-new">+ Nuevo</button>
+    </div>
+  </div>
+
+  <div id="scr-load">
+    <div class="card" style="text-align:center"><span class="spin"></span> Cargando…</div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const API = "https://vacilon-api.elvacilondelbsn.workers.dev";
+const $ = (id) => document.getElementById(id);
+const store = sessionStorage;
+
+const SECTIONS = {
+  noticias: { label: "Noticias", fields: [
+    {k:"title",label:"Titular",t:"text",req:1},
+    {k:"subtitle",label:"Entradilla",t:"text"},
+    {k:"body",label:"Texto",t:"textarea"},
+    {k:"tag",label:"Etiqueta (opcional)",t:"text",meta:1},
+    {k:"image",label:"Foto",t:"image"},
+    {k:"sort_order",label:"Orden (menor sale primero)",t:"number"},
+    {k:"is_published",label:"Publicado",t:"check"}
+  ]},
+  cambios: { label: "Cambios", fields: [
+    {k:"title",label:"Título del cambio",t:"text",req:1,ph:"Ej: Criollos adquieren a…"},
+    {k:"from",label:"Sale de",t:"text",meta:1,ph:"Ej: Cangrejeros de Santurce"},
+    {k:"to",label:"Llega a",t:"text",meta:1,ph:"Ej: Criollos de Caguas"},
+    {k:"body",label:"Detalles",t:"textarea"},
+    {k:"image",label:"Foto",t:"image"},
+    {k:"sort_order",label:"Orden (menor sale primero)",t:"number"},
+    {k:"is_published",label:"Publicado",t:"check"}
+  ]},
+  firmas: { label: "Firmas", fields: [
+    {k:"title",label:"Título",t:"text",req:1,ph:"Ej: Vaqueros firman a…"},
+    {k:"jugador",label:"Jugador",t:"text",meta:1},
+    {k:"equipo",label:"Equipo",t:"text",meta:1},
+    {k:"body",label:"Detalles",t:"textarea"},
+    {k:"image",label:"Foto",t:"image"},
+    {k:"sort_order",label:"Orden (menor sale primero)",t:"number"},
+    {k:"is_published",label:"Publicado",t:"check"}
+  ]},
+  agencia_libre: { label: "Agencia Libre", fields: [
+    {k:"title",label:"Nombre del jugador",t:"text",req:1},
+    {k:"posicion",label:"Posición",t:"select",meta:1,opts:["Base","Escolta","Alero","Ala-pívot","Pívot","Por definir"]},
+    {k:"subtitle",label:"Último equipo",t:"text"},
+    {k:"body",label:"Notas",t:"textarea"},
+    {k:"image",label:"Foto",t:"image"},
+    {k:"sort_order",label:"Orden (menor sale primero)",t:"number"},
+    {k:"is_published",label:"Publicado",t:"check"}
+  ]},
+  franquicias: { label: "Franquicias", fields: [
+    {k:"title",label:"Nombre del equipo",t:"text",req:1},
+    {k:"subtitle",label:"Ciudad",t:"text"},
+    {k:"abrev",label:"Abreviatura",t:"text",meta:1,ph:"Ej: CAG"},
+    {k:"body",label:"Descripción",t:"textarea"},
+    {k:"image",label:"Logo / foto",t:"image"},
+    {k:"sort_order",label:"Orden (menor sale primero)",t:"number"},
+    {k:"is_published",label:"Publicado",t:"check"}
+  ]}
+};
+const ORDER = ["noticias","cambios","firmas","agencia_libre","franquicias"];
+let cur = "noticias", editingId = null, cache = [];
+
+function show(id){
+  ["scr-setup","scr-login","scr-panel","scr-load"].forEach(s=>$(s).classList.add("hidden"));
+  $(id).classList.remove("hidden");
+}
+function err(id,msg){ const e=$(id); e.textContent=msg; e.style.display=msg?"block":"none"; }
+function okmsg(msg){ const e=$("form-ok"); e.textContent=msg; e.style.display=msg?"block":"none"; }
+function token(){ return store.getItem("vacilon_token")||""; }
+
+async function api(path, opts={}){
+  const h = Object.assign({"content-type":"application/json"}, opts.headers||{});
+  if(token()) h["authorization"]="Bearer "+token();
+  const r = await fetch(API+path, Object.assign({},opts,{headers:h}));
+  if(r.status===401){ logout(); throw new Error("Sesión vencida"); }
+  const j = await r.json().catch(()=>({ok:false,error:"Respuesta inválida"}));
+  if(!j.ok) throw new Error(j.error||"Error");
+  return j;
+}
+
+async function boot(){
+  try{
+    const s = await api("/api/setup-needed");
+    if(s.needed){ show("scr-setup"); return; }
+  }catch(e){ /* sigue a login */ }
+  if(token()){
+    try{ await api("/api/admin/content?section="+cur); enter(); return; }
+    catch(e){ store.removeItem("vacilon_token"); }
+  }
+  show("scr-login");
+}
+
+$("btn-setup").onclick = async ()=>{
+  err("setup-err","");
+  const username=$("su-user").value.trim(), password=$("su-pass").value, key=$("su-key").value.trim();
+  if(username.length<3) return err("setup-err","El usuario debe tener al menos 3 letras.");
+  if(password.length<8) return err("setup-err","La contraseña debe tener al menos 8 caracteres.");
+  if(!key) return err("setup-err","Escribe la llave de configuración.");
+  try{
+    await api("/api/setup",{method:"POST",body:JSON.stringify({username,password,key})});
+    const l = await api("/api/login",{method:"POST",body:JSON.stringify({username,password})});
+    store.setItem("vacilon_token",l.token);
+    store.setItem("vacilon_user",username);
+    enter();
+  }catch(e){ err("setup-err",e.message); }
+};
+
+$("btn-login").onclick = async ()=>{
+  err("login-err","");
+  const username=$("li-user").value.trim(), password=$("li-pass").value;
+  if(!username||!password) return err("login-err","Escribe tu usuario y contraseña.");
+  try{
+    const l = await api("/api/login",{method:"POST",body:JSON.stringify({username,password})});
+    store.setItem("vacilon_token",l.token);
+    store.setItem("vacilon_user",username);
+    enter();
+  }catch(e){ err("login-err",e.message==="Credenciales inválidas"?"Usuario o contraseña incorrectos.":e.message); }
+};
+
+function logout(){ store.removeItem("vacilon_token"); store.removeItem("vacilon_user"); location.reload(); }
+$("btn-logout").onclick = logout;
+
+function enter(){
+  $("who").textContent = "Conectado como "+(store.getItem("vacilon_user")||"admin");
+  const t=$("tabs"); t.innerHTML="";
+  ORDER.forEach(k=>{
+    const b=document.createElement("button");
+    b.className="tab"+(k===cur?" on":""); b.textContent=SECTIONS[k].label;
+    b.onclick=()=>{cur=k; editingId=null; hideForm(); [...t.children].forEach(x=>x.classList.remove("on")); b.classList.add("on"); load();};
+    t.appendChild(b);
+  });
+  show("scr-panel"); load();
+}
+
+async function load(){
+  const L=$("list"); L.innerHTML='<div class="card" style="text-align:center"><span class="spin"></span> Cargando…</div>';
+  try{
+    const j = await api("/api/admin/content?section="+cur);
+    cache = j.items||[]; renderList();
+  }catch(e){ L.innerHTML='<div class="empty">Error: '+e.message+'</div>'; }
+}
+
+function imgUrl(u){
+  if(!u) return "";
+  return u.startsWith("/api/") ? API+u : u;
+}
+
+function renderList(){
+  const L=$("list");
+  if(!cache.length){ L.innerHTML='<div class="empty">No hay contenido aquí todavía.<br>Toca "+ Nuevo" para agregar.</div>'; return; }
+  L.innerHTML="";
+  cache.forEach(it=>{
+    const d=document.createElement("div"); d.className="item";
+    const im = imgUrl(it.image_url);
+    d.innerHTML =
+      (im?'<img src="'+im+'" alt="" loading="lazy">':'<div style="width:56px;height:56px;border-radius:10px;background:#16213c;flex:none"></div>')+
+      '<div class="tt"><b></b><span></span><div style="margin-top:4px"><span class="badge '+(it.is_published?"pub":"nopub")+'">'+(it.is_published?"PUBLICADO":"BORRADOR")+'</span></div></div>'+
+      '<button class="ibtn" data-a="edit">Editar</button>'+
+      '<button class="ibtn del" data-a="del">Borrar</button>';
+    d.querySelector("b").textContent = it.title;
+    d.querySelector(".tt span").textContent = it.subtitle||"";
+    d.querySelector('[data-a=edit]').onclick=()=>openForm(it);
+    d.querySelector('[data-a=del]').onclick=()=>delItem(it);
+    L.appendChild(d);
+  });
+}
+
+async function delItem(it){
+  if(!confirm('¿Borrar "'+it.title+'"?')) return;
+  try{ await api("/api/content/"+it.id,{method:"DELETE"}); load(); }
+  catch(e){ alert("Error: "+e.message); }
+}
+
+function openForm(it){
+  editingId = it? it.id : null;
+  $("form-title").textContent = (it?"Editar · ":"Nuevo · ")+SECTIONS[cur].label;
+  err("form-err",""); okmsg("");
+  const F=$("form-fields"); F.innerHTML="";
+  const meta = it&&it.meta ? JSON.parse(it.meta||"{}") : {};
+  SECTIONS[cur].fields.forEach(f=>{
+    const wrap=document.createElement("div");
+    if(f.t==="check"){
+      wrap.innerHTML='<div class="checkrow"><input type="checkbox" id="ff-'+f.k+'"><label for="ff-'+f.k+'" style="margin:0;font-size:15px;color:var(--txt)">'+f.label+'</label></div>';
+      F.appendChild(wrap);
+      $("ff-"+f.k).checked = it? !!it.is_published : true;
+      return;
+    }
+    const lab=document.createElement("label"); lab.textContent=f.label+(f.req?" *":""); wrap.appendChild(lab);
+    let inp;
+    if(f.t==="textarea"){ inp=document.createElement("textarea"); }
+    else if(f.t==="select"){
+      inp=document.createElement("select");
+      f.opts.forEach(o=>{const op=document.createElement("option");op.value=o;op.textContent=o;inp.appendChild(op);});
+    }
+    else if(f.t==="image"){
+      inp=document.createElement("input"); inp.type="file"; inp.accept="image/*";
+      const prev=document.createElement("img"); prev.className="preview"; prev.id="ff-imgprev";
+      const hid=document.createElement("input"); hid.type="hidden"; hid.id="ff-image_url";
+      wrap.appendChild(inp); wrap.appendChild(prev); wrap.appendChild(hid);
+      const cur2 = it? it.image_url : "";
+      hid.value = cur2||"";
+      if(cur2){ prev.src=imgUrl(cur2); prev.style.display="block"; }
+      inp.onchange=async ()=>{
+        const file=inp.files[0]; if(!file) return;
+        if(file.size>5*1024*1024){ err("form-err","La foto no puede pasar de 5 MB."); return; }
+        err("form-err",""); okmsg("Subiendo foto…");
+        try{
+          const fd=new FormData(); fd.append("file",file);
+          const h={}; if(token()) h["authorization"]="Bearer "+token();
+          const r=await fetch(API+"/api/upload",{method:"POST",headers:h,body:fd});
+          if(r.status===401){ logout(); return; }
+          const j=await r.json();
+          if(!j.ok) throw new Error(j.error||"Error al subir");
+          hid.value=j.url; prev.src=imgUrl(j.url); prev.style.display="block"; okmsg("Foto lista.");
+        }catch(e){ err("form-err",e.message); okmsg(""); }
+      };
+      F.appendChild(wrap); return;
+    }
+    else { inp=document.createElement("input"); inp.type=f.t; if(f.ph) inp.placeholder=f.ph; }
+    inp.id="ff-"+f.k;
+    let v = f.meta ? (meta[f.k]||"") : (it? (it[f.k]??"") : "");
+    if(f.t==="number") v = it? (it.sort_order||0) : 0;
+    inp.value=v;
+    wrap.appendChild(inp); F.appendChild(wrap);
+  });
+  $("form-card").classList.remove("hidden");
+  $("fab-row").classList.add("hidden");
+  $("form-card").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function hideForm(){ $("form-card").classList.add("hidden"); $("fab-row").classList.remove("hidden"); editingId=null; }
+
+$("btn-new").onclick=()=>openForm(null);
+$("btn-cancel").onclick=hideForm;
+
+$("btn-save").onclick=async ()=>{
+  err("form-err",""); okmsg("");
+  const body={section:cur}; const meta={};
+  try{
+    SECTIONS[cur].fields.forEach(f=>{
+      if(f.t==="image"){ body.image_url=$("ff-image_url").value||""; return; }
+      if(f.t==="check"){ body.is_published=$("ff-"+f.k).checked?1:0; return; }
+      const v=$("ff-"+f.k).value;
+      if(f.meta) meta[f.k]=v;
+      else if(f.k==="sort_order") body.sort_order=parseInt(v||"0",10)||0;
+      else body[f.k]=v;
+    });
+    if(!body.title||!body.title.trim()) throw new Error("El título es obligatorio.");
+    body.meta=meta;
+    okmsg("Guardando…");
+    if(editingId) await api("/api/content/"+editingId,{method:"PUT",body:JSON.stringify(body)});
+    else await api("/api/content",{method:"POST",body:JSON.stringify(body)});
+    okmsg("Guardado."); hideForm(); load();
+  }catch(e){ err("form-err",e.message); okmsg(""); }
+};
+
+boot();
+</script>
+</body>
+</html>
