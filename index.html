@@ -147,6 +147,36 @@ tr.lead .pos{color:var(--yellow)}
 .roster-in{padding:0 20px 20px;border-top:1px solid var(--line);margin:0 20px;padding:16px 0 20px}
 .roster-in li{list-style:none;display:flex;justify-content:space-between;padding:8px 2px;border-bottom:1px dashed rgba(250,250,250,.08);font-size:14px}
 .roster-in li span:last-child{color:var(--muted);font-family:'Oswald';font-size:12px;letter-spacing:1px}
+/* ---------- trading cards 3D ---------- */
+.tfilter{display:flex;gap:10px;margin:2px 0 22px;flex-wrap:wrap}
+.tfilter button{font-family:'Oswald';font-size:13px;letter-spacing:2px;padding:9px 20px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;transition:.25s}
+.tfilter button.on{background:var(--yellow);border-color:var(--yellow);color:var(--ink);font-weight:700}
+.teams-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:16px}
+.tcard{perspective:1400px;cursor:pointer;--mx:50%;--my:50%}
+.tcard-tilt{transform-style:preserve-3d;transition:transform .25s ease-out;will-change:transform}
+.tcard-flip{position:relative;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.25,.8,.25,1);aspect-ratio:10/15.2}
+.tcard.flipped .tcard-flip{transform:rotateY(180deg)}
+.tface{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;overflow:hidden;border:1px solid rgba(255,255,255,.13)}
+.tfront{background:radial-gradient(120% 55% at 50% 0%,var(--tc,#0669d4) 0%,transparent 58%),linear-gradient(160deg,#0b2650 0%,#051d49 45%,#020c20 100%);display:flex;flex-direction:column;align-items:center;padding:16px 12px 12px;text-align:center;box-shadow:0 18px 42px -18px var(--tc,#0669d4)}
+.tfront::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,transparent 0 14px,rgba(255,255,255,.028) 14px 15px);pointer-events:none}
+.tfront.champ{border-color:rgba(247,224,18,.7);box-shadow:0 18px 46px -14px rgba(247,224,18,.45)}
+.tshine{position:absolute;inset:0;background:radial-gradient(420px circle at var(--mx) var(--my),rgba(255,255,255,.22),transparent 55%);opacity:0;transition:opacity .3s;pointer-events:none;z-index:3}
+.tcard:hover .tshine{opacity:1}
+.tcard-top{width:100%;display:flex;justify-content:space-between;align-items:center;font-family:'Oswald';font-size:10px;letter-spacing:2px;color:rgba(250,250,250,.6);position:relative;z-index:2}
+.tlogo-big{width:clamp(74px,58%,112px);aspect-ratio:1;object-fit:contain;background:#fff;border-radius:24px;padding:11px;margin:14px 0 10px;box-shadow:0 12px 30px rgba(0,0,0,.5);position:relative;z-index:2}
+.tfront h3{font-family:'Oswald';font-size:clamp(15px,4.4vw,20px);letter-spacing:.5px;line-height:1.15;position:relative;z-index:2}
+.tfront .champ-tag{margin:8px 0 0;position:relative;z-index:2}
+.tconf{font-family:'Oswald';font-size:10px;letter-spacing:3px;color:var(--muted);margin-top:7px;position:relative;z-index:2}
+.trec3{font-family:'Oswald';font-size:14px;letter-spacing:1px;margin-top:7px;color:var(--muted);position:relative;z-index:2}
+.trec3 b{color:var(--yellow);font-size:19px}
+.tbar{width:100%;height:6px;border-radius:99px;background:rgba(255,255,255,.1);margin-top:9px;overflow:hidden;position:relative;z-index:2}
+.tbar span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--tc,#0669d4),var(--yellow))}
+.thint{margin-top:auto;font-size:10px;letter-spacing:2px;color:var(--muted);font-family:'Oswald';position:relative;z-index:2}
+.tback{transform:rotateY(180deg);background:linear-gradient(165deg,#081c3d,#020b1d);display:flex;flex-direction:column;padding:16px 13px}
+.tback-head{font-family:'Oswald';font-size:11px;letter-spacing:2px;color:var(--yellow);display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.tback-roster{flex:1;overflow-y:auto;margin:0;padding:0;scrollbar-width:thin;min-height:0}
+.tback-roster li{list-style:none;font-size:13px;padding:7px 3px;border-bottom:1px dashed rgba(255,255,255,.09);display:flex;gap:9px;align-items:center}
+.tback-roster li i{font-style:normal;font-family:'Oswald';font-size:10px;color:var(--muted);width:18px;flex:none}
 /* ---------- tribuna ---------- */
 .tribuna{background:var(--navy);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .trib-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
@@ -343,7 +373,12 @@ footer ul a:hover{color:var(--yellow)}
   <div class="wrap">
     <div class="sec-head rv">
       <div><span class="eyebrow">Las doce franquicias</span><h2>Equipos <span>2026</span></h2></div>
-      <p>Toca cualquier tarjeta para ver su plantilla.</p>
+      <p>Toca una carta para voltearla y descubrir su plantilla.</p>
+    </div>
+    <div class="tfilter rv">
+      <button class="on" data-f="ALL" onclick="setTeamFilter('ALL')">Todos</button>
+      <button data-f="A" onclick="setTeamFilter('A')">Conferencia A</button>
+      <button data-f="B" onclick="setTeamFilter('B')">Conferencia B</button>
     </div>
     <div class="teams-grid" id="teamsGrid"></div>
   </div>
@@ -548,21 +583,57 @@ function showConf(c){
     </tr>`;
   }).join("");
 }
+let teamFilter = "ALL";
+function setTeamFilter(f){
+  teamFilter = f;
+  document.querySelectorAll(".tfilter button").forEach(b=>b.classList.toggle("on", b.dataset.f===f));
+  renderTeams();
+}
 function renderTeams(){
   const el = $("teamsGrid"); if(!el) return;
   const all = [...CONF_A.map(r=>({...r,conf:"A"})), ...CONF_B.map(r=>({...r,conf:"B"}))];
-  el.innerHTML = all.map((r,i)=>{
-    const ros = (ROSTERS[r.t]||[]).map(n=>`<li><span>${esc(n)}</span></li>`).join("") || '<li><span>Roster 2026 próximamente</span><span></span></li>';
-    return `<div class="team rv" onclick="this.classList.toggle('open')">
-      <div class="team-top">
-        <img class="team-badge" src="${LOGOS[r.t]||""}" alt="Logo de ${esc(r.t)}" loading="lazy">
-        <div><h3>${esc(r.t)}${r.champ?' <span class="champ-tag">CAMPEÓN</span>':""}</h3><div class="trec"><b>${r.g}G</b> · ${r.p}P · CONF ${r.conf}</div></div>
-        <span class="team-plus">+</span>
-      </div>
-      <div class="team-roster"><ul class="roster-in">${ros}</ul></div>
+  const list = all.map((r,i)=>({...r,num:i+1})).filter(r=>teamFilter==="ALL"||r.conf===teamFilter);
+  el.innerHTML = list.map(r=>{
+    const ros = ROSTERS[r.t]||[];
+    const pct = Math.round(r.g/(r.g+r.p)*100);
+    const items = ros.map((n,j)=>`<li><i>${String(j+1).padStart(2,"0")}</i><span>${esc(n)}</span></li>`).join("") || '<li><span>Plantilla 2026 próximamente</span></li>';
+    return `<div class="tcard rv" style="--tc:${r.c}">
+      <div class="tcard-tilt"><div class="tcard-flip">
+        <div class="tface tfront${r.champ?" champ":""}">
+          <div class="tshine"></div>
+          <div class="tcard-top"><span>Nº ${String(r.num).padStart(2,"0")}</span><span>BSN · 2026</span></div>
+          <img class="tlogo-big" src="${LOGOS[r.t]||""}" alt="Logo de ${esc(r.t)}" loading="lazy">
+          <h3>${esc(r.t)}</h3>
+          ${r.champ?'<span class="champ-tag">CAMPEÓN 2026</span>':""}
+          <div class="tconf">CONFERENCIA ${r.conf}</div>
+          <div class="trec3"><b>${r.g}</b>G · ${r.p}P · ${pct}%</div>
+          <div class="tbar"><span style="width:${pct}%"></span></div>
+          <div class="thint">TOCA PARA VOLTEAR</div>
+        </div>
+        <div class="tface tback">
+          <div class="tback-head"><span>PLANTILLA 2026</span><span>${ros.length||"–"}</span></div>
+          <ul class="tback-roster">${items}</ul>
+          <div class="thint" style="text-align:center;margin-top:10px">TOCA PARA VOLVER</div>
+        </div>
+      </div></div>
     </div>`;
   }).join("");
-  observeRv();
+  bindCards(); observeRv();
+}
+function bindCards(){
+  document.querySelectorAll(".tcard").forEach(card=>{
+    const tilt = card.querySelector(".tcard-tilt");
+    card.addEventListener("pointermove", e=>{
+      if(e.pointerType==="touch") return;
+      const b = card.getBoundingClientRect();
+      const x = (e.clientX-b.left)/b.width, y = (e.clientY-b.top)/b.height;
+      tilt.style.transform = `rotateY(${((x-.5)*22).toFixed(1)}deg) rotateX(${((.5-y)*22).toFixed(1)}deg)`;
+      card.style.setProperty("--mx",(x*100).toFixed(1)+"%");
+      card.style.setProperty("--my",(y*100).toFixed(1)+"%");
+    });
+    card.addEventListener("pointerleave", ()=>{ tilt.style.transform="rotateY(0deg) rotateX(0deg)"; });
+    card.addEventListener("click", ()=>card.classList.toggle("flipped"));
+  });
 }
 function renderPoll(){
   const el = $("pollOpts"); if(!el) return;
