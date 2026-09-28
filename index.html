@@ -134,7 +134,7 @@ tbody tr:hover td{background:rgba(244,62,60,.05)}
 .team{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:22px 8px;text-align:center;transition:.18s}
 .team:hover{border-color:var(--red);transform:translateY(-4px)}
 .team-badge{width:54px;height:54px;margin:0 auto 10px;border-radius:50%;background:var(--red);display:grid;place-items:center;font-family:'Archivo Black',sans-serif;font-size:16px;color:#fff}
-.team:nth-child(2n) .team-badge{background:var(--navy);border:2px solid var(--yellow)}
+.team:nth-child(2n) .team-badge{background:var(--navy);border:2px solid var(--yellow)}.team{cursor:pointer}.team-name{font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:.5px;font-size:14px;display:block;margin-top:2px}.team-meta{font-size:11px;color:var(--muted);display:block;margin-top:4px}.team-rec{display:inline-block;margin-top:8px;font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:var(--yellow);background:rgba(247,224,18,.08);border:1px solid rgba(247,224,18,.25);padding:4px 12px;border-radius:20px}.team-roster{max-height:0;overflow:hidden;transition:max-height .3s ease;text-align:left}.team.open .team-roster{max-height:640px;margin-top:12px}.roster-title{font-family:'Oswald',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--yellow);margin-bottom:8px}.team-roster ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}.team-roster li{font-size:13px;color:#dfe6f5;border-bottom:1px solid var(--line);padding-bottom:6px}.roster-soon{font-size:12px;color:var(--muted)}.team-more{font-size:11px;color:var(--muted);letter-spacing:1px;margin-top:10px;display:block}.team.open .team-more{display:none}.team-champ{display:inline-block;font-family:'Oswald',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;color:#051d49;background:var(--yellow);padding:3px 10px;border-radius:4px;margin-bottom:6px}
 .team span{font-size:11px;font-weight:600;letter-spacing:1px;display:block;font-family:'Oswald',sans-serif;text-transform:uppercase;color:var(--muted)}
 
 /* newsletter */
@@ -331,7 +331,7 @@ footer h4{font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:3px;marg
         <table><thead><tr><th>#</th><th>Equipo</th><th>G</th><th>P</th></tr></thead><tbody id="tblB"></tbody></table>
       </div>
     </div>
-    <div class="sec-note" style="margin-top:14px">Tabla de ejemplo — se actualiza cada semana</div>
+    <div class="sec-note" style="margin-top:14px">Temporada regular 2026 · Datos finales · Campeones: Vaqueros de Bayamón (título #18) · Final 4–3 vs Santeros de Aguada · MVP Final: Renaldo Balkman</div>
   </div>
 </section>
 
@@ -479,8 +479,21 @@ const DEMO = [
   ex:'Calendario apretado, duelos directos y una tabla que no da tregua.',
   body:'<p class="lead-p">Respira hondo, que esta semana viene cargada.</p><p>Artículo de ejemplo: previa de la jornada con los partidos clave y lo que cada equipo se juega.</p>'}
 ];
-const CONF_A=['Vaqueros de Bayamón','Criollos de Caguas','Mets de Guaynabo','Osos de Manatí','Capitanes de Arecibo','Gigantes de Carolina'];
-const CONF_B=['Santeros de Aguada','Leones de Ponce','Indios de Mayagüez','Piratas de Quebradillas','Atléticos de San Germán','Cangrejeros de Santurce'];
+const CONF_A=[{t:'Criollos de Caguas',c:'Caguas',g:23,p:11},{t:'Vaqueros de Bayamón',c:'Bayamón',g:22,p:12},{t:'Cangrejeros de Santurce',c:'Santurce',g:19,p:15},{t:'Gigantes de Carolina',c:'Carolina',g:18,p:16},{t:'Osos de Manatí',c:'Manatí',g:15,p:19},{t:'Mets de Guaynabo',c:'Guaynabo',g:14,p:20}];
+const CONF_B=[{t:'Atléticos de San Germán',c:'San Germán',g:21,p:13},{t:'Capitanes de Arecibo',c:'Arecibo',g:17,p:17},{t:'Santeros de Aguada',c:'Aguada',g:17,p:17},{t:'Leones de Ponce',c:'Ponce',g:15,p:19},{t:'Indios de Mayagüez',c:'Mayagüez',g:13,p:21},{t:'Piratas de Quebradillas',c:'Quebradillas',g:10,p:24}];
+const ROSTERS={
+'Criollos de Caguas':['Travis Trice','Louis King','Moses Brown','Maurice Harkless','Jorge Bryan Díaz','Alexander Kappos','Christian López','Alejandro Ralat','Hiram Huertas','Luis Rivera','Gilberto Clavell','Anthony Morales'],
+'Vaqueros de Bayamón':['Renaldo Balkman','Gary Browne','Javier Mojica','Chris McCullough','Damian Jones','Jassel Pérez','Jae Crowder','Stephen Thompson Jr.','Jordan Cintrón','Isaiah Palermo','Javier Ezquerra','Neftalí Acevedo'],
+'Cangrejeros de Santurce':['Walter Hodge','Ángel Rodríguez','David Huertas','Isaiah Piñeiro','Devon Collier','Kenneth Faried','Malik Beasley','Ian Clark','DJ Wilson','Jordan Howard','Tyler Polo','Emmanuel Maldonado'],
+'Gigantes de Carolina':['Tremont Waters','George Conditt IV','Alexander Franklin','Jesús Cruz','Evander Ortiz','Scottie James','Mike Scott','Earl Clark','Jaylen Nowell','Dyondre Domínguez','Isaac Rosa','Timajh Parker-Rivera'],
+'Osos de Manatí':['Jhivvan Jackson','Alex Morales','Ethan Thompson','Alex Abreu','Jonathan Rodríguez','Isaac Sosa','Tyler Davis','Cheick Diallo','Kristian Doolittle','Jamil Wilson','Ryan Arcidiacono','Christopher Ortiz'],
+'Mets de Guaynabo':['Brandon Knight','Torrey Craig','Devin Williams','Ismael Romero','Jaysean Paige','Eric Ayala','KJ Maura','Ryan Pearson','William Martínez','Theo Pinson','Denis Clemente','Wilfredo Rodríguez'],
+'Atléticos de San Germán':['André Curbelo','Montrezl Harrell','Alex Hamilton','Tony Bishop','Davon Jefferson','Jorge Pacheco','Julián Torres','Antonio Gordon','Chris Brady','Christian Pizarro','Onzie Branch','Kyle Rose'],
+'Capitanes de Arecibo':['Jack McVeigh','Derrick Walton Jr.','Isaiah Miles','Timothy Soares','Justin Reyes','Alfonso Plummer','Rafael Pinzón','Diego González','Emmy Andújar','Jahlil Okafor','Jorge Díaz','Matt López'],
+'Santeros de Aguada':['Rigoberto Mendoza','Joel Soriano','Jacob Wiley','Iván Gandía','Manny Camper','Giancarlo Rosado','John Holland','Arnaldo Toro','Admiral Schofield','John Brown III','Zakai Zeigler','Jase Febres'],
+'Leones de Ponce':['Jalen Crutcher','Brady Manek','Jezreel De Jesús','Christian Negrón','Jordan Murphy','Thomas Robinson','Terence Davis II','Lance Stephenson','Aleem Ford','Jared Ruiz','Janpier Lezcano','Enrique Ramos'],
+'Indios de Mayagüez':['Nathan Sobey','Sam Waardenburg','Eugene German','Benito Santiago Jr.','Jonathan García','José Placer','Neftalí Álvarez','Nick Lucena','Bradley Camacho','Josué Erazo','Alonzo Ortiz-Traylor','Yahir Cordero'],
+'Piratas de Quebradillas':['Gian Clavell','Víctor Liz','Emmanuel Mudiay','Phillip Wheeler','Carlos Emory','Gabriel Belardo','William Cruz','Derek Reese','Fabián Rivera','Grant Basile','David Stockton','José Román']};
 const TEAM_COLORS=['#f7e012','#f43e3c','#2b8ff0','#57a048'];
 const initials=n=>n.split(' ').filter(w=>w.length>2&&w!=='de').map(w=>w[0]).slice(0,2).join('').toUpperCase();
 
@@ -509,11 +522,13 @@ function render(){
   document.getElementById('destacadosGrid').innerHTML=DEMO.slice(1,5).map((a,i)=>cardHTML(a,i)).join('');
   const news=allNews();
   document.getElementById('newsGrid').innerHTML=news.length?news.map((a,i)=>cardHTML(a,i)).join(''):'<div class="empty-msg">Aún no hay noticias. Usa el panel del cliente para publicar la primera.</div>';
-  const row=(t,i)=>`<tr><td class="pos">${i+1}</td><td>${t}</td><td class="num">–</td><td class="num">–</td></tr>`;
+  const row=(r,i)=>`<tr><td class="pos">${i+1}</td><td>${r.t}</td><td class="num">${r.g}</td><td class="num">${r.p}</td></tr>`;
   document.getElementById('tblA').innerHTML=CONF_A.map(row).join('');
   document.getElementById('tblB').innerHTML=CONF_B.map(row).join('');
-  document.getElementById('teamsGrid').innerHTML=[...CONF_A,...CONF_B].map((t,i)=>
-    `<div class="team"><div class="team-badge" style="background:${TEAM_COLORS[i%4]}">${initials(t)}</div><span>${t}</span></div>`).join('');
+  const ALL_TEAMS=[...CONF_A.map(r=>({...r,conf:'A'})),...CONF_B.map(r=>({...r,conf:'B'}))];
+   const rosterHTML=t=>{const rs=ROSTERS[t];if(!rs||!rs.length)return '<span class="roster-soon">El roster 2026 se publica próximamente.</span>';return '<ul>'+rs.map(j=>`<li>${j}</li>`).join('')+'</ul>';};
+   document.getElementById('teamsGrid').innerHTML=ALL_TEAMS.map((r,i)=>
+     `<div class="team" onclick="this.classList.toggle('open')"><div class="team-badge" style="background:${TEAM_COLORS[i%4]}">${initials(r.t)}</div>${r.t==='Vaqueros de Bayamón'?'<div class="team-champ">CAMPEÓN 2026</div>':''}<div class="team-name">${r.t}</div><div class="team-meta">${r.c} · Conf. ${r.conf}</div><div class="team-rec">${r.g}G – ${r.p}P</div><div class="team-roster"><div class="roster-title">ROSTER 2026</div>${rosterHTML(r.t)}</div><div class="team-more">VER ROSTER +</div></div>`).join('');
 }
 
 /* ============ artículo ============ */
