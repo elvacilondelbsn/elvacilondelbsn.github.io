@@ -130,6 +130,30 @@ tr.lead .pos{color:var(--yellow)}
 .streak{display:inline-block;font-family:'Oswald';font-size:13px;letter-spacing:1px;padding:4px 12px;border-radius:999px;background:rgba(87,160,72,.16);color:#9be08a;border:1px solid rgba(87,160,72,.4)}
 .streak.cold{background:rgba(244,62,60,.14);color:#ff9d9b;border-color:rgba(244,62,60,.4)}
 .champ-tag{display:inline-block;font-family:'Oswald';font-size:11px;letter-spacing:2px;background:var(--yellow);color:var(--ink);padding:4px 10px;border-radius:6px;margin-left:10px;font-weight:700;vertical-align:middle}
+/* ---------- race standings ---------- */
+.race-wrap{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media(max-width:880px){.race-wrap{grid-template-columns:1fr}}
+.race-conf{background:rgba(250,250,250,.028);border:1px solid var(--line);border-radius:22px;padding:30px 18px 14px;position:relative;overflow:hidden}
+.race-conf::after{content:"";position:absolute;top:0;left:0;right:0;height:9px;background:repeating-conic-gradient(#f5f5f5 0 25%,#101010 0 50%) 0 0/18px 18px}
+.race-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.race-head h3{font-family:'Oswald';font-size:17px;letter-spacing:3px;font-weight:600}
+.race-head h3 span{color:var(--yellow)}
+.race-tag{font-family:'Oswald';font-size:11px;letter-spacing:2px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 13px}
+.rlane{position:relative;display:grid;grid-template-columns:32px 46px 1fr auto;gap:12px;align-items:center;padding:11px 12px;border-radius:15px;margin-bottom:9px;background:rgba(250,250,250,.025);border:1px solid transparent;transition:.25s}
+.rlane:hover{border-color:rgba(247,224,18,.35);transform:translateX(4px)}
+.rlane.lead{border-color:rgba(247,224,18,.45);background:rgba(247,224,18,.06)}
+.rpos{font-family:'Oswald';font-size:23px;color:var(--muted);text-align:center}
+.rlane.lead .rpos{color:var(--yellow)}
+.rlogo{width:46px;height:46px;object-fit:contain;background:#fff;border-radius:13px;padding:5px}
+.rname{font-weight:700;font-size:15px;line-height:1.25}
+.rname small{display:block;font-family:'Oswald';font-size:10.5px;letter-spacing:1.6px;color:var(--muted);font-weight:400;margin-top:3px}
+.rname .champ-tag{margin-left:8px}
+.rrec{font-family:'Oswald';font-size:15px;letter-spacing:1px;text-align:right;white-space:nowrap}
+.rrec b{color:var(--yellow);font-size:19px}
+.rbar{grid-column:1/-1;height:7px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden}
+.rbar i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--yellow));transition:width 1.2s cubic-bezier(.2,.7,.2,1)}
+.rlane.lead .rbar i{background:linear-gradient(90deg,#c9962a,var(--yellow))}
+.race-wrap.in .rbar i{width:var(--w,50%)}
 /* ---------- teams ---------- */
 .teams-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
 .team{background:var(--navy);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:.3s}
@@ -266,6 +290,7 @@ footer ul a:hover{color:var(--yellow)}
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Vacilón BSN">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 </head>
@@ -353,17 +378,11 @@ footer ul a:hover{color:var(--yellow)}
   <div class="wrap">
     <div class="sec-head rv">
       <div><span class="eyebrow">Temporada regular 2026</span><h2>Standings <span>BSN</span></h2></div>
-      <p>La carrera por la postemporada, conferencia por conferencia.</p>
+      <p>La carrera por la postemporada: cada carril es un equipo y la barra marca su ritmo.</p>
     </div>
-    <div class="tabs rv">
-      <button id="tabA" class="on" onclick="showConf('A')">Conferencia A</button>
-      <button id="tabB" onclick="showConf('B')">Conferencia B</button>
-    </div>
-    <div class="rv" style="overflow-x:auto">
-    <table class="stable">
-      <thead><tr><th>#</th><th>Equipo</th><th>G</th><th>P</th><th>Racha de victorias</th><th>JJ</th></tr></thead>
-      <tbody id="stableBody"></tbody>
-    </table>
+    <div class="race-wrap rv">
+      <div class="race-conf" id="raceA"></div>
+      <div class="race-conf" id="raceB"></div>
     </div>
   </div>
 </section>
@@ -568,20 +587,21 @@ function renderBento(){
     </article>`).join("");
   observeRv();
 }
-function showConf(c){
-  $("tabA").classList.toggle("on", c==="A");
-  $("tabB").classList.toggle("on", c==="B");
-  const rows = (c==="A"?CONF_A:CONF_B);
-  $("stableBody").innerHTML = rows.map((r,i)=>{
-    const pct = Math.round(r.g/(r.g+r.p)*100);
-    return `<tr class="${i===0?"lead":""}">
-      <td class="pos">${i+1}</td>
-      <td><div class="tcell"><img class="tlogo" src="${LOGOS[r.t]||""}" alt="" loading="lazy">${esc(r.t)}${r.champ?'<span class="champ-tag">CAMPEÓN 2026</span>':""}</div></td>
-      <td class="rec"><b>${r.g}</b></td><td class="rec">${r.p}</td>
-      <td><div class="wbar"><i style="width:${pct}%"></i></div></td>
-      <td class="rec">34</td>
-    </tr>`;
-  }).join("");
+function renderRace(){
+  const mk = (id, rows, conf) => {
+    const el = $(id); if(!el) return;
+    el.innerHTML = `<div class="race-head"><h3>CONFERENCIA <span>${conf}</span></h3><span class="race-tag">TEMP 2026</span></div>` + rows.map((r,i)=>{
+      const pct = Math.round(r.g/(r.g+r.p)*100);
+      return `<div class="rlane${i===0?" lead":""}">
+        <div class="rpos">${i+1}</div>
+        <img class="rlogo" src="${LOGOS[r.t]||""}" alt="Logo de ${esc(r.t)}" loading="lazy">
+        <div class="rname">${esc(r.t)}${r.champ?'<span class="champ-tag">CAMPEÓN</span>':""}<small>${pct}% DE VICTORIAS · 34 JJ</small></div>
+        <div class="rrec"><b>${r.g}</b>G · ${r.p}P</div>
+        <div class="rbar"><i style="--w:${pct}%"></i></div>
+      </div>`;
+    }).join("");
+  };
+  mk("raceA", CONF_A, "A"); mk("raceB", CONF_B, "B");
 }
 let teamFilter = "ALL";
 function setTeamFilter(f){
@@ -698,7 +718,7 @@ function renderPostList(){
 }
 /* ================= INIT ================= */
 document.querySelectorAll(".modal-back").forEach(m=>m.addEventListener("click",e=>{ if(e.target===m) closeModals(); }));
-renderScores(); renderBento(); showConf("A"); renderTeams(); renderPoll(); renderMarquee(); observeRv();
+renderScores(); renderBento(); renderRace(); renderTeams(); renderPoll(); renderMarquee(); observeRv();
 </script>
 <script>if("serviceWorker" in navigator){navigator.serviceWorker.addEventListener("controllerchange",function(){window.location.reload();});window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js");});}</script>
 </body>
