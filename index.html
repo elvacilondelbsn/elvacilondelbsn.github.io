@@ -503,13 +503,6 @@ try{posts=JSON.parse(localStorage.getItem('vacilon_posts')||'[]')}catch(e){posts
 const allNews=()=>[...posts,...DEMO.filter(a=>a.id!=='hero')];
 const findA=id=>[...posts,...DEMO].find(a=>a.id===id);
 
-/* ============ ticker ============ */
-(function(){
-  const items=allNews().slice(0,6).map(a=>a.title.toUpperCase());
-  const chunk=items.map(t=>`<b><span class="pulse"></span>LO ÚLTIMO</b> ${t} &nbsp;&nbsp;•&nbsp;&nbsp; `).join('');
-  document.getElementById('ticker').innerHTML=chunk+chunk;
-})();
-
 /* ============ render ============ */
 function cardHTML(a,i){
   return `<article class="card" onclick="openArticle('${a.id}')">
