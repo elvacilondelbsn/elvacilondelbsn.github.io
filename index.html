@@ -136,6 +136,7 @@ tr.lead .pos{color:var(--yellow)}
 .team:hover{border-color:rgba(247,224,18,.5);transform:translateY(-4px)}
 .team-top{padding:20px;display:flex;align-items:center;gap:14px}
 .team-badge{width:58px;height:58px;border-radius:16px;flex:none;background:#fff;object-fit:contain;padding:7px}
+.tlogo{width:26px;height:26px;object-fit:contain;background:#fff;border-radius:8px;padding:2px;flex:none}
 .team-top h3{font-size:19px}
 .team-top .trec{color:var(--muted);font-family:'Oswald';font-size:14px;letter-spacing:1px;margin-top:4px}
 .team-top .trec b{color:var(--yellow)}
@@ -540,7 +541,7 @@ function showConf(c){
     const pct = Math.round(r.g/(r.g+r.p)*100);
     return `<tr class="${i===0?"lead":""}">
       <td class="pos">${i+1}</td>
-      <td><div class="tcell"><span class="tdot" style="background:${r.c}"></span>${esc(r.t)}${r.champ?'<span class="champ-tag">CAMPEÓN 2026</span>':""}</div></td>
+      <td><div class="tcell"><img class="tlogo" src="${LOGOS[r.t]||""}" alt="" loading="lazy">${esc(r.t)}${r.champ?'<span class="champ-tag">CAMPEÓN 2026</span>':""}</div></td>
       <td class="rec"><b>${r.g}</b></td><td class="rec">${r.p}</td>
       <td><div class="wbar"><i style="width:${pct}%"></i></div></td>
       <td class="rec">34</td>
