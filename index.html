@@ -239,12 +239,12 @@ tr.lead .pos{color:var(--yellow)}
 .fa-count{font-family:'Oswald';font-size:12px;letter-spacing:2px;color:var(--muted)}
 .fafilters{margin:0 0 14px}
 .fafilters button{padding:8px 14px;font-size:11px;letter-spacing:1.5px}
-.fa-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-@media(min-width:760px){.fa-grid{grid-template-columns:repeat(3,1fr)}}
-.fa-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:16px 12px;text-align:center}
-.fa-pos{display:inline-block;font-size:10px;font-weight:800;letter-spacing:2px;color:var(--yellow);border:1px solid rgba(247,224,18,.45);border-radius:99px;padding:4px 12px;margin-bottom:10px}
+.fa-grid{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 16px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+.fa-card{flex:0 0 auto;width:148px;scroll-snap-align:start;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:12px 10px;text-align:center}
+.fa-pos{display:inline-block;font-size:9px;font-weight:800;letter-spacing:1.5px;color:var(--yellow);border:1px solid rgba(247,224,18,.45);border-radius:99px;padding:3px 9px;margin-bottom:8px}
 .fa-pos-na{color:rgba(255,255,255,.45);border-color:rgba(255,255,255,.18)}
-.fa-name{font-weight:800;font-size:15px;letter-spacing:.3px}
+.fa-name{font-weight:800;font-size:13px;letter-spacing:.3px;line-height:1.25}
+.fa-scroll{font-size:10px;font-weight:800;letter-spacing:2px;color:rgba(255,255,255,.4);text-align:right;margin:2px 2px 0}
 .fa-team{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;color:var(--muted);font-size:12.5px}
 .fa-team img{width:32px;height:32px;object-fit:contain}
 .fa-team .tlogo-none{width:32px;height:32px;font-size:10px}
@@ -740,10 +740,9 @@ const FA_PLAYERS = [
   {n:"Ángel Oquendo", pos:"ESCOLTA"}
 ];
 function faCard(p){
-  return `<div class="fa-card rv">
+  return `<div class="fa-card">
     ${p.pos?`<span class="fa-pos">${FA_POS_NAME[p.pos]}</span>`:`<span class="fa-pos fa-pos-na">POR DEF.</span>`}
     <div class="fa-name">${esc(p.n)}</div>
-    ${p.t?`<div class="fa-team">${tlogo(p.t)}<span>${esc(p.t)}</span></div>`:""}
     ${p.nota?`<div class="fa-nota">${esc(p.nota)}</div>`:""}
   </div>`;
 }
@@ -754,7 +753,7 @@ function renderFA(){
   }).join("");
   const list = FA_PLAYERS.filter(p=>faPos==="ALL"||p.pos===faPos);
   const grid = list.length
-    ? `<div class="fa-grid">${list.map(faCard).join("")}</div>`
+    ? `<div class="fa-scroll">DESLIZA →</div><div class="fa-grid">${list.map(faCard).join("")}</div>`
     : `<div class="fa-empty">Sin agentes libres registrados en esta posición.</div>`;
   return `<div class="fa-board">
     <div class="fa-head"><span class="chip">AGENCIA LIBRE 2026</span><span class="fa-count">${FA_PLAYERS.length} JUGADORES</span></div>
