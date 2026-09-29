@@ -365,7 +365,7 @@ $("btn-save").onclick=async ()=>{
   const body={section:cur}; const meta={};
   try{
     SECTIONS[cur].fields.forEach(f=>{
-      if(f.t==="image"){ body.image_url=$("ff-image_url").value||""; return; }
+      if(f.t==="image"){ body.image_url=imgUrl($("ff-image_url").value||""); return; }
       if(f.t==="check"){ body.is_published=$("ff-"+f.k).checked?1:0; return; }
       const v=$("ff-"+f.k).value;
       if(f.meta) meta[f.k]=v;
