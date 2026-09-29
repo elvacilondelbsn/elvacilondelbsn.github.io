@@ -124,7 +124,6 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--yellow)}
     </div>
     <div id="fab-row" style="margin-top:6px">
       <button class="btn btn-y" id="btn-new">+ Nuevo</button>
-      <button class="btn hidden" id="btn-delsec" style="background:#3a1620;color:#ff8f8f;margin-left:8px">Eliminar sección</button>
     </div>
   </div>
 
@@ -275,7 +274,7 @@ $("btn-logout").onclick = logout;
 async function enter(){
   $("who").textContent = "Conectado como "+(store.getItem("vacilon_user")||"admin");
   try{ const j = await api("/api/admin/custom-sections"); CUSTOM = j.sections||[]; }catch(e){ CUSTOM=[]; }
-  renderTabs(); updateDelBtn();
+  renderTabs();
   show("scr-panel"); load();
 }
 
@@ -284,7 +283,7 @@ function renderTabs(){
   const mk=(label,on,go)=>{
     const b=document.createElement("button");
     b.className="tab"+(on?" on":""); b.textContent=label;
-    b.onclick=()=>{ go(); editingId=null; hideForm(); [...t.children].forEach(x=>x.classList.remove("on")); b.classList.add("on"); updateDelBtn(); load(); };
+    b.onclick=()=>{ go(); editingId=null; hideForm(); [...t.children].forEach(x=>x.classList.remove("on")); b.classList.add("on"); load(); };
     t.appendChild(b);
   };
   ORDER.forEach(k=>mk(secDef(k).label, k===cur, ()=>{cur=k;}));
@@ -301,26 +300,9 @@ async function newSection(){
   try{
     const j=await api("/api/admin/custom-sections",{method:"POST",body:JSON.stringify({title:name.trim()})});
     CUSTOM.push({key:j.key,title:j.title,items:0});
-    cur=j.key; renderTabs(); updateDelBtn(); load();
+    cur=j.key; renderTabs(); load();
   }catch(e){ alert("Error: "+e.message); }
 }
-
-function updateDelBtn(){
-  const d=secDef(cur);
-  $("btn-delsec").classList.toggle("hidden",!(d&&d.custom));
-}
-
-async function delSection(){
-  const d=secDef(cur);
-  if(!d||!d.custom) return;
-  if(!confirm('¿Eliminar la sección "'+d.label+'" y todo su contenido? Esta acción no se puede deshacer.')) return;
-  try{
-    await api("/api/admin/custom-sections/"+d.key,{method:"DELETE"});
-    CUSTOM=CUSTOM.filter(x=>x.key!==d.key);
-    cur="noticias"; renderTabs(); updateDelBtn(); load();
-  }catch(e){ alert("Error: "+e.message); }
-}
-$("btn-delsec").onclick=delSection;
 
 async function load(){
   const L=$("list"); L.innerHTML='<div class="card" style="text-align:center"><span class="spin"></span> Cargando…</div>';
