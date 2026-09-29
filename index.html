@@ -66,13 +66,12 @@ nav.main a.on{color:var(--ink);background:var(--yellow)}
 .quarters{display:none}
 .gcard.open{display:flex;align-items:stretch}
 .gcard.open .gmain{min-width:0}
-.gcard.open .quarters{display:block;margin:2px 0 2px 14px;padding:2px 0 2px 14px;border-left:1px solid var(--line);min-width:132px}
+.gcard.open .quarters{display:block;margin:2px 0 2px 14px;padding:2px 0 2px 14px;border-left:1px solid var(--line);min-width:188px}
 .quarters table{width:100%;border-collapse:collapse}
 .quarters th,.quarters td{padding:4px 6px;text-align:center;font-family:'Oswald';font-size:13px}
 .quarters th{color:var(--muted);font-weight:400;letter-spacing:1.5px;font-size:10px}
-.quarters td:first-child,.quarters th:first-child{text-align:left;color:var(--muted);letter-spacing:1.5px;font-size:10px}
-.quarters tr.tot td{border-top:1px solid var(--line);font-weight:700}
-.quarters tr.tot td:not(:first-child){color:var(--yellow);font-size:15px}
+.quarters td:first-child{text-align:left;color:var(--muted);letter-spacing:1.5px;font-size:10px}
+.quarters td.tot{border-left:1px solid var(--line);font-weight:700;color:var(--yellow);font-size:15px}
 .sbadge{font-family:'Oswald';font-weight:700;font-size:15px;letter-spacing:3px;color:#0a0a0a;background:var(--yellow);padding:9px 20px;transform:skewX(-10deg);display:flex;align-items:center;white-space:nowrap;box-shadow:0 0 26px rgba(247,224,18,.30)}
 .scores-row.is-empty{width:100%;margin:0;padding:16px 22px}
 .scores-empty{position:relative;overflow:hidden;text-align:center;width:100%;max-width:880px;margin:0 auto;padding:32px 24px 34px;background:linear-gradient(135deg,#0b2258 0%,#051d49 55%,#0a0f30 100%);border:1px solid rgba(247,224,18,.4);border-radius:18px;box-shadow:0 0 44px rgba(247,224,18,.10),inset 0 0 60px rgba(247,224,18,.04)}
@@ -991,9 +990,9 @@ function renderScores(){
     h += SCORES.map(g=>{
       const t=(x,win)=>`<div class="gteam${win?' win':''}"><span class="tn"><span class="gdot" style="background:${x[3]}"></span>${esc(x[1])}</span><span class="sc">${x[2]||"–"}</span></div>`;
       const aw=g.a[2]>g.b[2]&&g.a[2]>0, bw=g.b[2]>g.a[2]&&g.b[2]>0;
-      const qtab = g.q?`<div class="quarters"><table><tr><th></th><th>${esc(g.a[0])}</th><th>${esc(g.b[0])}</th></tr>${
-        [0,1,2,3].map(i=>`<tr><td>Q${i+1}</td><td>${g.q.a[i]}</td><td>${g.q.b[i]}</td></tr>`).join("")
-      }<tr class="tot"><td>TOTAL</td><td>${g.a[2]}</td><td>${g.b[2]}</td></tr></table></div>`:"";
+      const qtab = g.q?`<div class="quarters"><table><tr><th></th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th><th>TOT</th></tr>`+
+        `<tr><td>${esc(g.a[0])}</td>${[0,1,2,3].map(i=>`<td>${g.q.a[i]}</td>`).join("")}<td class="tot">${g.a[2]}</td></tr>`+
+        `<tr><td>${esc(g.b[0])}</td>${[0,1,2,3].map(i=>`<td>${g.q.b[i]}</td>`).join("")}<td class="tot">${g.b[2]}</td></tr></table></div>`:"";
       return `<div class="gcard${g.q?" expandable":""}"${g.q?" onclick=\"this.classList.toggle('open')\"":""}"><div class="gmain"><div class="g-top"><span>${esc(g.l)}</span><span>${g.a[2]>0?'<span class="final">FINAL</span>':""}${g.q?' <span class="qhint">＋</span>':""}</span></div>${t(g.a,aw)}${t(g.b,bw)}</div>${qtab}</div>`;
     }).join("");
     el.innerHTML = h;
