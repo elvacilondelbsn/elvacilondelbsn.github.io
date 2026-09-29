@@ -139,6 +139,23 @@ const $ = (id) => document.getElementById(id);
 function escHtml(t){ return String(t==null?"":t).replace(/[&<>"\']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 const store = sessionStorage;
 
+/* Plantillas base 2026 (las mismas del sitio). Si un equipo no tiene cambios publicados, se muestra esta base. */
+const BASE_ROSTERS = {
+  "Vaqueros de Bayamón":["Gary Browne","Isiah Gaiter","Javier Ezquerra","Khary Mauras","Daniel Ortiz","Neftalí Acevedo","Javier Mojica","Stephen Thompson Jr.","Isaiah Palermo","Jordan Cintrón","Renaldo Balkman","Luis P. Hernández","Jassel Pérez","Damian Jones","Chris McCullough"],
+  "Cangrejeros de Santurce":["Ángel Rodríguez","Walter Hodge","Jordan Howard","Emmanuel Maldonado","David Huertas","Corey McKeithan","Malik Beasley","Ángel Matías","Isaiah Piñeiro","Tyler Polo","Xavier Zambrana","Devon Collier","Davon Jefferson"],
+  "Criollos de Caguas":["Luis Rivera","Michael O'Connell","Travis Trice","Christian López","Alejandro Ralat","Jeff Early Jr.","Hiram Huertas","Joshua Milton Denton","Anthony Morales","Isaiah Stone","Alexander Kappos","Maurice Harkless","Richard Núñez","Oenis Medina","Jorge Bryan Díaz"],
+  "Gigantes de Carolina":["Evander Ortiz","Tremont Waters","Isaac Rosa","Jaylen Nowell","Joshua Rivera","Jesús Cruz","Adrián Ocasio","Chad Baker-Mazara","Tory San Antonio","Deandre Williams","Timajh Parker-Rivera","Dyondre Domínguez","Alexander Franklin","Daniel Rivera","Hunter Tyson","George Conditt IV"],
+  "Osos de Manatí":["Alex Abreu","José Gines","Brayan Calderón","Ryan Arcidiacono","Giovanni Santiago","Tyquan Rolón","Jhivvan Jackson","Ethan Thompson","Raymond Cintrón","Ismael Yomar Cruz","Jakair Sánchez","Jonathan Rodríguez","Alex Morales","EJ Crawford","Mike Bruesewitz","Jamil Wilson","Christopher Ortiz","Tyler Cook","José Guitián","Tyler Davis","Cheick Diallo","Kendric Davis","Gaby Belardo"],
+  "Mets de Guaynabo":["Javon Bennett","KJ Maura","Brandon Knight","Dante Treacy","Duran Alicea","Brandon Boyd","Jaysean Paige","William Martínez","Gianfranco Grafals","Eric Ayala","Theo Pinson","Gerardo Texeira","Wilfredo Rodríguez","Ryan Pearson","JJ Romer","Devin Williams","Ismael Romero","Moses Brown"],
+  "Atléticos de San Germán":["Jorge Pacheco","André Curbelo","Christian Pizarro","Alex Hamilton","Kyle Rose","Jorge Matos","Rico Hopping","Braelee Albert","Joseph Bull","Marlon Hargis","Onzie Branch","Jorge Torres","Montrezl Harrell","Antonio Gordon","Chris Brady","Julián Torres","Nick Perkins"],
+  "Capitanes de Arecibo":["Diego González","Malachi Smith","Derrick Walton Jr.","Rafael Pinzón","Jevin Muñiz","Alfonso Plummer","Jonathan Zhao","Daniel Rosado","Juan Pablo Piñeiro","Justin Reyes","Geancarlo Peguero","Marvin Mantilla","Ramses Meléndez","Emmy Andújar","Jack McVeigh","Félix Rivera Jr.","Timothy Soares","Matt López","Isaiah Miles"],
+  "Santeros de Aguada":["Zakai Zeigler","Iván Gandía Rosa","Matthew Lee","Harold Pérez","Robiel Morales","Rigoberto Mendoza","Jase Febres","John Holland","Manny Camper","Miguel Martínez","Admiral Schofield","Leandro Allende","Owen Pérez","Arnaldo Toro","Giancarlo Rosado","John Brown III","Joel Soriano","Jacob Wiley"],
+  "Leones de Ponce":["Avry Holmes","Janpier Lezcano","Johned Walker","Jezreel De Jesús","Omar Figueroa","Tjader Fernández","Kenneth Santos","Terence Davis II","Alejandro Vázquez","Bryan Powell","Aleem Ford","Jordan Murphy","Christian Negrón","Jalen Crutcher","Thomas Robinson","Darius Bazley"],
+  "Indios de Mayagüez":["Jonathan García","Nathan Sobey","Neftalí Álvarez","Yahir Cordero","Nick Lucena","Jared Ruiz","Benito Santiago Jr.","José Placer","Luis Henríquez","Miye Oni","Bradley Camacho","Josué Erazo","Luis Cuascut","Sam Waardenburg","Kevin Allen","Tyrell Harrison","Carlos Yao López","Chris Gastón"],
+  "Piratas de Quebradillas":["Gaby Belardo","Josh Vázquez","William Cruz","Fabián Rivera","Jay S. Álvarez","Emmanuel Mudiay","Anthony Cambo Jr.","Gian Clavell","Víctor Liz","Dimencio Vaughn","Carlos Emory","Jayden Martínez","Phillip Wheeler","Derek Reese","José Román","Ibrahim Sylla"]
+};
+const TEAM_NAMES = ["Vaqueros de Bayamón", "Cangrejeros de Santurce", "Criollos de Caguas", "Gigantes de Carolina", "Osos de Manatí", "Mets de Guaynabo", "Atléticos de San Germán", "Capitanes de Arecibo", "Santeros de Aguada", "Leones de Ponce", "Indios de Mayagüez", "Piratas de Quebradillas"];
+
 const SECTIONS = {
   estadisticas: { label: "Estadísticas", fields: [
     {k:"title",label:"Jugador",t:"text",req:1,ph:"Ej: Travis Trice"},
@@ -159,6 +176,14 @@ const SECTIONS = {
     {k:"score_a",label:"Puntos A",t:"number",meta:1,ph:"Ej: 91"},
     {k:"team_b",label:"Equipo B",t:"text",req:1,meta:1,ph:"Ej: Santeros"},
     {k:"score_b",label:"Puntos B",t:"number",meta:1,ph:"Ej: 75"},
+    {k:"q1a",label:"Q1 · Puntos de A",t:"number",meta:1,ph:"Ej: 22"},
+    {k:"q2a",label:"Q2 · Puntos de A",t:"number",meta:1,ph:"Ej: 25"},
+    {k:"q3a",label:"Q3 · Puntos de A",t:"number",meta:1,ph:"Ej: 20"},
+    {k:"q4a",label:"Q4 · Puntos de A",t:"number",meta:1,ph:"Ej: 24"},
+    {k:"q1b",label:"Q1 · Puntos de B",t:"number",meta:1,ph:"Ej: 18"},
+    {k:"q2b",label:"Q2 · Puntos de B",t:"number",meta:1,ph:"Ej: 20"},
+    {k:"q3b",label:"Q3 · Puntos de B",t:"number",meta:1,ph:"Ej: 22"},
+    {k:"q4b",label:"Q4 · Puntos de B",t:"number",meta:1,ph:"Ej: 15"},
     {k:"sort_order",label:"Orden (menor sale primero)",t:"number"},
     {k:"is_published",label:"Publicado",t:"check"}
   ]},
@@ -301,9 +326,10 @@ function renderTabs(){
     t.appendChild(b);
   };
   ORDER.forEach(k=>mk(secDef(k).label, k===cur, ()=>{cur=k;}));
-  CUSTOM.forEach(c=>{ if(c.key==="estadisticas") return; mk(c.title, c.key===cur, ()=>{cur=c.key;}); });
+  CUSTOM.forEach(c=>{ if(c.key==="estadisticas"||c.key==="equipos") return; mk(c.title, c.key===cur, ()=>{cur=c.key;}); });
   mk("Encuesta", cur==="__poll", ()=>{cur="__poll";});
   mk("Suscriptores", cur==="__subs", ()=>{cur="__subs";});
+  mk("Equipos", cur==="__teams", ()=>{cur="__teams";});
   const nb=document.createElement("button");
   nb.className="tab"; nb.textContent="＋ Nueva sección"; nb.style.borderStyle="dashed";
   nb.onclick=newSection;
@@ -419,6 +445,7 @@ async function load(){
   hideForm();
   if(cur==="__poll") return loadPollAdmin();
   if(cur==="__subs") return loadSubsAdmin();
+  if(cur==="__teams") return loadTeamsAdmin();
   if(cur==="estadisticas"){
     try{ await api("/api/admin/custom-sections",{method:"POST",body:JSON.stringify({title:"Estadísticas"})}); }
     catch(e){ /* si ya existe, seguimos */ }
@@ -549,6 +576,124 @@ $("btn-save").onclick=async ()=>{
     okmsg("Guardado."); hideForm(); load();
   }catch(e){ err("form-err",e.message); okmsg(""); }
 };
+
+/* ===== Pestaña Equipos: plantillas por equipo ===== */
+let teamCur = TEAM_NAMES[0];
+let teamOverrides = {}; // equipo -> {id, roster} publicado en el API
+let teamWork = {};      // equipo -> [jugadores] copia de trabajo
+let teamDirty = {};     // equipo -> true si tiene cambios sin guardar
+
+async function loadTeamsAdmin(){
+  hideForm(); $("fab-row").classList.add("hidden");
+  const L=$("list"); L.innerHTML='<div class="card" style="text-align:center"><span class="spin"></span> Cargando plantillas…</div>';
+  try{
+    try{ await api("/api/admin/custom-sections",{method:"POST",body:JSON.stringify({title:"Equipos"})}); }
+    catch(e){ /* si ya existe, seguimos */ }
+    const j = await api("/api/admin/content?section=equipos");
+    teamOverrides={}; teamWork={}; teamDirty={};
+    (j.items||[]).forEach(it=>{
+      try{
+        const arr=JSON.parse(it.body||"[]");
+        if(it.title && Array.isArray(arr)) teamOverrides[it.title]={id:it.id, roster:arr.map(String)};
+      }catch(e){}
+    });
+    TEAM_NAMES.forEach(t=>{ teamWork[t]=teamOverrides[t]?teamOverrides[t].roster.slice():(BASE_ROSTERS[t]||[]).slice(); });
+    if(TEAM_NAMES.indexOf(teamCur)<0) teamCur=TEAM_NAMES[0];
+    renderTeamsAdmin();
+  }catch(e){ L.innerHTML='<div class="empty">Error: '+escHtml(e.message)+'</div>'; }
+}
+
+function renderTeamsAdmin(){
+  const L=$("list");
+  const ros=teamWork[teamCur]||[];
+  const dirtyTeams=Object.keys(teamDirty).filter(t=>teamDirty[t]);
+  let h='<div class="card"><h2 style="margin:0 0 4px;font-size:18px">Plantillas por equipo</h2>'
+    +'<p class="hint" style="margin:0 0 12px">Elige un equipo para ver su plantilla. Puedes eliminar jugadores, moverlos a otro equipo o añadir nuevos. Nada se publica hasta que toques <b>Guardar cambios</b>.</p>'
+    +'<label>Equipo</label><select id="team-sel">'
+    +TEAM_NAMES.map(t=>'<option value="'+escHtml(t)+'"'+(t===teamCur?" selected":"")+'>'+escHtml(t)+'</option>').join("")
+    +'</select>'
+    +'<div style="margin-top:10px;display:flex;align-items:center;gap:10px">'
+    +(teamOverrides[teamCur]?'<span class="badge pub">Personalizada</span>':'<span class="badge nopub">Base 2026</span>')
+    +'<span class="hint" style="margin:0">'+ros.length+' jugadores'+(teamDirty[teamCur]?' · <b style="color:var(--yellow)">con cambios sin guardar</b>':'')+'</span></div></div>';
+  h+='<div class="card"><h3 style="margin:0 0 10px;font-size:15px">Jugadores</h3>';
+  if(!ros.length) h+='<div class="empty">Sin jugadores en esta plantilla.</div>';
+  ros.forEach((n,i)=>{
+    h+='<div class="item"><div class="tt"><b>'+escHtml(n)+'</b></div>'
+      +'<select data-mv="'+i+'" style="max-width:140px">'
+      +TEAM_NAMES.filter(t=>t!==teamCur).map(t=>'<option value="'+escHtml(t)+'">'+escHtml(t)+'</option>').join("")
+      +'</select>'
+      +'<button class="ibtn" data-move="'+i+'">Mover</button>'
+      +'<button class="ibtn del" data-del="'+i+'">✕</button></div>';
+  });
+  h+='<label style="margin-top:14px">Añadir jugador a '+escHtml(teamCur)+'</label>'
+    +'<div class="row"><input type="text" id="team-new" placeholder="Nombre del jugador" style="flex:1;min-width:150px">'
+    +'<button class="btn btn-s" style="flex:0 0 auto" id="team-add">Añadir</button></div></div>';
+  h+='<div class="card"><button class="btn btn-y" id="team-save"'+(dirtyTeams.length?'':' disabled style="opacity:.4"')+'>Guardar cambios'
+    +(dirtyTeams.length?' ('+dirtyTeams.length+' equipo'+(dirtyTeams.length>1?'s':'')+')':'')+'</button>';
+  if(teamOverrides[teamCur]) h+='<div style="margin-top:10px"><button class="btn btn-r" style="width:100%" id="team-reset">Restablecer a la base 2026</button></div>';
+  h+='<p class="hint">Al guardar, las plantillas se actualizan en el sitio de inmediato.</p></div>';
+  L.innerHTML=h;
+  $("team-sel").onchange=e=>{ teamCur=e.target.value; renderTeamsAdmin(); };
+  L.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>teamDel(parseInt(b.getAttribute("data-del"),10)));
+  L.querySelectorAll("[data-move]").forEach(b=>b.onclick=()=>teamMove(parseInt(b.getAttribute("data-move"),10)));
+  $("team-add").onclick=teamAdd;
+  const sv=$("team-save"); if(sv) sv.onclick=teamSave;
+  const rs=$("team-reset"); if(rs) rs.onclick=teamReset;
+}
+
+function teamDel(i){
+  const n=(teamWork[teamCur]||[])[i];
+  if(!confirm('¿Eliminar a "'+n+'" de '+teamCur+'?')) return;
+  teamWork[teamCur].splice(i,1); teamDirty[teamCur]=true; renderTeamsAdmin();
+}
+
+function teamMove(i){
+  const sel=document.querySelector('[data-mv="'+i+'"]');
+  const dest=sel?sel.value:"";
+  if(!dest) return;
+  const n=teamWork[teamCur][i];
+  if(!confirm('¿Mover a "'+n+'" de '+teamCur+' a '+dest+'?')) return;
+  teamWork[teamCur].splice(i,1); teamWork[dest].push(n);
+  teamDirty[teamCur]=true; teamDirty[dest]=true; renderTeamsAdmin();
+}
+
+function teamAdd(){
+  const inp=$("team-new"); const n=(inp.value||"").trim();
+  if(!n){ alert("Escribe el nombre del jugador."); return; }
+  teamWork[teamCur].push(n); teamDirty[teamCur]=true; renderTeamsAdmin();
+}
+
+async function teamSave(){
+  const teams=Object.keys(teamDirty).filter(t=>teamDirty[t]);
+  if(!teams.length) return;
+  if(!confirm("¿Publicar los cambios en "+teams.length+" equipo(s)? Se verán en el sitio de inmediato.")) return;
+  try{
+    for(const t of teams){
+      const body=JSON.stringify(teamWork[t]);
+      if(teamOverrides[t] && teamOverrides[t].id){
+        await api("/api/content/"+teamOverrides[t].id,{method:"PUT",body:JSON.stringify({body:body})});
+        teamOverrides[t].roster=teamWork[t].slice();
+      }else{
+        const j=await api("/api/content",{method:"POST",body:JSON.stringify({section:"equipos",title:t,body:body,is_published:1})});
+        teamOverrides[t]={id:j.id, roster:teamWork[t].slice()};
+      }
+    }
+    teamDirty={};
+    alert("Cambios publicados en el sitio.");
+    loadTeamsAdmin();
+  }catch(e){ alert("Error: "+e.message); }
+}
+
+async function teamReset(){
+  if(!teamOverrides[teamCur]) return;
+  if(!confirm("¿Restablecer la plantilla de "+teamCur+" a la base 2026? Se borran los cambios publicados de este equipo.")) return;
+  try{
+    await api("/api/content/"+teamOverrides[teamCur].id,{method:"DELETE"});
+    delete teamOverrides[teamCur]; delete teamDirty[teamCur];
+    teamWork[teamCur]=(BASE_ROSTERS[teamCur]||[]).slice();
+    renderTeamsAdmin();
+  }catch(e){ alert("Error: "+e.message); }
+}
 
 boot();
 </script>
