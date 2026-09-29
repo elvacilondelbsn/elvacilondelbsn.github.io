@@ -1136,6 +1136,30 @@ async function subscribeNL(e){
   }catch(err){ msg.style.color = "#ff8f8d"; msg.textContent = "Ese correo no parece válido. Inténtalo de nuevo."; }
 }
 /* ---------- LOS NÚMEROS: líderes de estadísticas ---------- */
+/* Líderes finales 2026 (La Guerra del BSN, tabla actualizada sep 2026).
+   Datos integrados: se muestran si el panel /admin aún no publica estadísticas.
+   Si el panel publica, esos datos reemplazan a estos. */
+const STATS_DEFAULT = [
+  {name:"Travis Trice", team:"Criollos", pos:"PG", pj:46, pts:23.3, reb:3.8, ast:8.8, stl:2.0, blk:0.0},
+  {name:"Jack McVeigh", team:"Capitanes", pos:"PF", pj:19, pts:22.1, reb:5.4, ast:3.9, stl:0.6, blk:0.3},
+  {name:"Chris Duarte", team:"Sin equipo", pos:"SG", pj:0, pts:19.5, reb:4.9, ast:4.7, stl:0.0, blk:0.0},
+  {name:"Emmanuel Mudiay", team:"Gigantes", pos:"PG", pj:34, pts:19.4, reb:5.3, ast:5.7, stl:1.1, blk:0.0},
+  {name:"Jaylen Nowell", team:"Gigantes", pos:"SG", pj:39, pts:19.2, reb:2.6, ast:2.0, stl:0.2, blk:0.2},
+  {name:"Joshua Ibarra", team:"Piratas", pos:"C", pj:0, pts:14.6, reb:14.2, ast:2.3, stl:0.0, blk:0.0},
+  {name:"Hassan Whiteside", team:"Mets", pos:"C", pj:0, pts:16.0, reb:11.6, ast:0.2, stl:0.0, blk:0.0},
+  {name:"Thomas Robinson", team:"Sin equipo", pos:"C", pj:40, pts:10.9, reb:11.4, ast:1.5, stl:0.8, blk:0.3},
+  {name:"Devin Williams", team:"Mets", pos:"PF", pj:26, pts:12.1, reb:10.6, ast:0.9, stl:0.9, blk:0.3},
+  {name:"Montrezl Harrell", team:"Atléticos", pos:"PF", pj:39, pts:15.1, reb:10.3, ast:2.5, stl:0.8, blk:0.8},
+  {name:"Miye Oni", team:"Osos", pos:"PG", pj:13, pts:16.8, reb:6.3, ast:8.5, stl:1.0, blk:0.3},
+  {name:"Derrick Walton Jr", team:"Sin equipo", pos:"PG", pj:40, pts:15.4, reb:2.7, ast:8.0, stl:0.9, blk:0.1},
+  {name:"Milton Doyle", team:"Criollos", pos:"PG", pj:0, pts:14.9, reb:4.1, ast:6.1, stl:0.0, blk:0.0},
+  {name:"Alex Hamilton", team:"Sin equipo", pos:"SG", pj:39, pts:12.0, reb:5.0, ast:5.8, stl:1.2, blk:0.2},
+  {name:"Louis King", team:"Sin equipo", pos:"SF", pj:46, pts:15.8, reb:6.0, ast:3.3, stl:2.0, blk:0.7},
+  {name:"Moses Brown", team:"Criollos", pos:"C", pj:46, pts:14.6, reb:9.8, ast:0.4, stl:1.4, blk:3.0},
+  {name:"Rigoberto Mendoza", team:"Santeros", pos:"SG", pj:53, pts:15.5, reb:6.0, ast:4.3, stl:1.2, blk:0.3},
+  {name:"Sam Waardenburg", team:"Indios", pos:"PF", pj:21, pts:15.3, reb:8.2, ast:3.3, stl:0.5, blk:1.2},
+  {name:"Jayden Martínez", team:"Criollos", pos:"PF", pj:34, pts:6.1, reb:5.9, ast:1.7, stl:0.4, blk:1.0}
+];
 let STATS = [];   // [{name, team, pos, pj, pts, reb, ast, stl, blk}]
 let statCat = "pts";
 const STAT_CATS = { pts:"PUNTOS", reb:"REBOTES", ast:"ASISTENCIAS", stl:"ROBOS", blk:"TAPONES" };
@@ -1150,6 +1174,7 @@ async function loadStats(){
                pts: n("pts"), reb: n("reb"), ast: n("ast"), stl: n("stl"), blk: n("blk") };
     }).filter(s=>s.name);
   }catch(e){ STATS = []; }
+  if(!STATS.length) STATS = STATS_DEFAULT.slice(); // datos integrados si el panel no ha publicado
   renderStats();
 }
 function setStatCat(c){
