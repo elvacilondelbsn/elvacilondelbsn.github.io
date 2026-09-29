@@ -136,6 +136,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--yellow)}
 "use strict";
 const API = "https://vacilon-api.elvacilondelbsn.workers.dev";
 const $ = (id) => document.getElementById(id);
+function escHtml(t){ return String(t==null?"":t).replace(/[&<>"\']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 const store = sessionStorage;
 
 const SECTIONS = {
@@ -288,6 +289,8 @@ function renderTabs(){
   };
   ORDER.forEach(k=>mk(secDef(k).label, k===cur, ()=>{cur=k;}));
   CUSTOM.forEach(c=>mk(c.title, c.key===cur, ()=>{cur=c.key;}));
+  mk("Encuesta", cur==="__poll", ()=>{cur="__poll";});
+  mk("Suscriptores", cur==="__subs", ()=>{cur="__subs";});
   const nb=document.createElement("button");
   nb.className="tab"; nb.textContent="＋ Nueva sección"; nb.style.borderStyle="dashed";
   nb.onclick=newSection;
@@ -304,7 +307,106 @@ async function newSection(){
   }catch(e){ alert("Error: "+e.message); }
 }
 
+let pollCache=[], subsCache=[];
+
+async function loadPollAdmin(){
+  hideForm(); $("fab-row").classList.add("hidden");
+  const L=$("list"); L.innerHTML='<div class="card" style="text-align:center"><span class="spin"></span> Cargando…</div>';
+  try{ const j=await api("/api/admin/poll"); pollCache=j.polls||[]; renderPollAdmin(); }
+  catch(e){ L.innerHTML='<div class="empty">Error: '+escHtml(e.message)+'</div>'; }
+}
+function renderPollAdmin(){
+  const L=$("list");
+  const act=pollCache.find(p=>p.is_active);
+  let h='<div class="card"><h2 style="margin:0 0 4px;font-size:18px">Encuesta activa</h2>';
+  if(act){
+    h+='<p style="font-size:16px;margin:8px 0"><b>'+escHtml(act.question)+'</b></p>';
+    h+='<p class="hint" style="margin:0 0 10px">'+act.total+' votos en total</p>';
+    h+=act.options.map(o=>{
+      const pct=act.total?Math.round(o.votes/act.total*100):0;
+      return '<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px"><span>'+escHtml(o.text)+'</span><b>'+o.votes+' · '+pct+'%</b></div>'+
+      '<div style="height:8px;background:#0a1328;border-radius:99px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:var(--yellow)"></div></div></div>';
+    }).join("");
+  } else h+='<p class="hint">No hay encuesta activa. Publica una abajo y saldrá en La Tribuna del sitio.</p>';
+  h+='</div>';
+  h+='<div class="card"><h2 style="margin:0 0 4px;font-size:18px">Nueva encuesta</h2>'+
+    '<p class="hint">Al publicarla reemplaza la actual. Los votos anteriores quedan en el historial.</p>'+
+    '<div class="err" id="poll-err"></div><div class="okmsg" id="poll-ok"></div>'+
+    '<label>Pregunta</label><input type="text" id="poll-q" placeholder="Ej: ¿Quién gana el sábado?">'+
+    '<label>Opciones (una por línea, mínimo 2, máximo 6)</label><textarea id="poll-opts" placeholder="Vaqueros de Bayamón\nCriollos de Caguas"></textarea>'+
+    '<div style="height:12px"></div><button class="btn btn-y" id="poll-pub">Publicar encuesta</button></div>';
+  const hist=pollCache.filter(p=>!p.is_active);
+  if(hist.length){
+    h+='<div class="card"><h2 style="margin:0 0 8px;font-size:18px">Historial</h2>';
+    hist.forEach(p=>{
+      h+='<div class="item"><div class="tt"><b>'+escHtml(p.question)+'</b><span>'+p.total+' votos · '+escHtml(String(p.created_at||"").slice(0,10))+'</span></div>'+
+      '<button class="ibtn del" data-polldel="'+p.id+'">Borrar</button></div>';
+    });
+    h+='</div>';
+  }
+  L.innerHTML=h;
+  $("poll-pub").onclick=publishPoll;
+  L.querySelectorAll("[data-polldel]").forEach(b=>b.onclick=()=>delPoll(b.getAttribute("data-polldel")));
+}
+async function publishPoll(){
+  const q=$("poll-q").value.trim();
+  const opts=$("poll-opts").value.split("\n").map(x=>x.trim()).filter(Boolean);
+  const E=$("poll-err"), O=$("poll-ok");
+  E.style.display="none"; O.style.display="none";
+  if(!q){ E.textContent="Escribe la pregunta."; E.style.display="block"; return; }
+  if(opts.length<2){ E.textContent="Mínimo 2 opciones."; E.style.display="block"; return; }
+  try{
+    O.textContent="Publicando…"; O.style.display="block";
+    await api("/api/admin/poll",{method:"POST",body:JSON.stringify({question:q,options:opts})});
+    loadPollAdmin();
+  }catch(e){ O.style.display="none"; E.textContent=e.message; E.style.display="block"; }
+}
+async function delPoll(id){
+  if(!confirm("¿Borrar esta encuesta y sus votos?")) return;
+  try{ await api("/api/admin/poll/"+id,{method:"DELETE"}); loadPollAdmin(); }
+  catch(e){ alert("Error: "+e.message); }
+}
+
+async function loadSubsAdmin(){
+  hideForm(); $("fab-row").classList.add("hidden");
+  const L=$("list"); L.innerHTML='<div class="card" style="text-align:center"><span class="spin"></span> Cargando…</div>';
+  try{ const j=await api("/api/admin/subscribers"); subsCache=j.items||[]; renderSubsAdmin(j.total||0); }
+  catch(e){ L.innerHTML='<div class="empty">Error: '+escHtml(e.message)+'</div>'; }
+}
+function renderSubsAdmin(total){
+  const L=$("list");
+  let h='<div class="card"><div class="topbar"><h2 style="margin:0;font-size:18px">Suscriptores · '+total+'</h2>'+
+    '<button class="btn btn-s" id="subs-csv" style="width:auto;padding:10px 16px">Exportar CSV</button></div>'+
+    '<p class="hint" style="margin:8px 0 0">Correos que se suscribieron al newsletter desde el sitio. Descárgalos en CSV y súbelos a tu plataforma de correos (Mailchimp, Brevo) para enviarles noticias.</p></div>';
+  if(!subsCache.length) h+='<div class="empty">Aún no hay suscriptores.</div>';
+  else subsCache.forEach(x=>{
+    h+='<div class="item"><div class="tt"><b>'+escHtml(x.email)+'</b><span>'+escHtml(String(x.created_at||"").slice(0,16).replace("T"," "))+'</span></div>'+
+    '<button class="ibtn del" data-subdel="'+x.id+'">Borrar</button></div>';
+  });
+  L.innerHTML=h;
+  $("subs-csv").onclick=exportSubsCSV;
+  L.querySelectorAll("[data-subdel]").forEach(b=>b.onclick=()=>delSub(b.getAttribute("data-subdel")));
+}
+function exportSubsCSV(){
+  const rows=[["correo","fecha"]];
+  subsCache.forEach(x=>rows.push([x.email,x.created_at||""]));
+  const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(",")).join("\n");
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
+  a.download="suscriptores-vacilon.csv"; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+}
+async function delSub(id){
+  if(!confirm("¿Borrar este suscriptor?")) return;
+  try{ await api("/api/admin/subscribers/"+id,{method:"DELETE"}); loadSubsAdmin(); }
+  catch(e){ alert("Error: "+e.message); }
+}
+
 async function load(){
+  hideForm();
+  if(cur==="__poll") return loadPollAdmin();
+  if(cur==="__subs") return loadSubsAdmin();
+  $("fab-row").classList.remove("hidden");
   const L=$("list"); L.innerHTML='<div class="card" style="text-align:center"><span class="spin"></span> Cargando…</div>';
   try{
     const j = await api("/api/admin/content?section="+cur);
