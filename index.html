@@ -1041,7 +1041,7 @@ function observeRv(){
 /* ================= MODALES ================= */
 function closeModals(){ document.querySelectorAll(".modal-back").forEach(m=>m.classList.remove("show")); }
 function openArticle(id){
-  const a = allNews().find(x=>x.id===id); if(!a) return;
+  const a = allNews().find(x=>String(x.id)===String(id)); if(!a) return;
   $("maImg").src = rimg(a); $("maTitle").textContent = a.title;
   $("maChip").textContent = a.chip||"NOTICIA"; $("maChip").className = "chip "+(a.cc||"");
   $("maDemo").style.display = a.demo?"inline-block":"none";
