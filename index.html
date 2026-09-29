@@ -72,13 +72,15 @@ nav.main a.on{color:var(--ink);background:var(--yellow)}
 .quarters tr.tot td{border-top:1px solid var(--line);font-weight:700}
 .quarters tr.tot td:not(:first-child){color:var(--yellow);font-size:15px}
 .sbadge{font-family:'Oswald';font-weight:700;font-size:15px;letter-spacing:3px;color:#0a0a0a;background:var(--yellow);padding:9px 20px;transform:skewX(-10deg);display:flex;align-items:center;white-space:nowrap;box-shadow:0 0 26px rgba(247,224,18,.30)}
-.offcard{min-width:300px;position:relative;overflow:hidden;background:linear-gradient(135deg,#0b2258 0%,#051d49 55%,#0a0f30 100%);border:1px solid rgba(247,224,18,.5);box-shadow:0 0 34px rgba(247,224,18,.14),inset 0 0 46px rgba(247,224,18,.05)}
-.offcard::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-45deg,transparent 0 12px,rgba(247,224,18,.055) 12px 14px);pointer-events:none}
-.offcard>*{position:relative}
-.off-champ{display:flex;align-items:center;gap:9px;font-family:'Oswald';font-weight:700;font-size:24px;letter-spacing:2px;color:#f7e012;margin-top:2px}
-@supports ((-webkit-background-clip:text) or (background-clip:text)){.off-champ{background:linear-gradient(180deg,#ffe45e,#f7e012 55%,#c98f0a);-webkit-background-clip:text;background-clip:text;color:transparent}}
-.off-title{font-family:'Oswald';font-size:19px;letter-spacing:1px;color:#fff;margin-top:4px}
-.off-sub{color:var(--muted);font-size:11px;margin-top:6px;letter-spacing:1.5px;font-family:'Oswald'}
+.scores-row.is-empty{width:100%;margin:0;padding:16px 22px}
+.scores-empty{position:relative;overflow:hidden;text-align:center;width:100%;max-width:880px;margin:0 auto;padding:32px 24px 34px;background:linear-gradient(135deg,#0b2258 0%,#051d49 55%,#0a0f30 100%);border:1px solid rgba(247,224,18,.4);border-radius:18px;box-shadow:0 0 44px rgba(247,224,18,.10),inset 0 0 60px rgba(247,224,18,.04)}
+.scores-empty::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-45deg,transparent 0 14px,rgba(247,224,18,.05) 14px 16px);pointer-events:none}
+.scores-empty>*{position:relative}
+.scores-empty .sbadge{display:inline-flex}
+.scores-empty h3{font-family:'Oswald';font-weight:700;font-size:clamp(26px,4.5vw,42px);letter-spacing:3px;color:#fff;margin:18px 0 12px}
+.empty-champ{display:flex;align-items:center;justify-content:center;gap:10px;font-family:'Oswald';font-weight:700;font-size:clamp(16px,2.6vw,22px);letter-spacing:2px;color:var(--yellow);margin:0 0 12px}
+.empty-sub{color:var(--muted);font-size:14px;letter-spacing:1px;margin:0}
+@media(max-width:640px){.scores-row.is-empty{padding:12px 14px}.scores-empty{padding:24px 16px 26px}}
 .foot-soc{display:flex;gap:16px;margin-top:14px}
 .foot-soc a{color:var(--muted);opacity:.85;transition:.2s;display:inline-flex}
 .foot-soc a:hover{color:var(--yellow);opacity:1}
@@ -980,8 +982,9 @@ const allNews = () => NEWS;
 function renderScores(){
   const el = $("scoreRow"); if(!el) return;
   const has = SCORES.length>0;
-  let h = '<span class="sbadge">RESULTADOS</span>';
   if(has){
+    el.classList.remove("is-empty");
+    let h = '<span class="sbadge">RESULTADOS</span>';
     h += SCORES.map(g=>{
       const t=(x,win)=>`<div class="gteam${win?' win':''}"><span class="tn"><span class="gdot" style="background:${x[3]}"></span>${esc(x[1])}</span><span class="sc">${x[2]||"–"}</span></div>`;
       const aw=g.a[2]>g.b[2]&&g.a[2]>0, bw=g.b[2]>g.a[2]&&g.b[2]>0;
@@ -990,10 +993,11 @@ function renderScores(){
       }<tr class="tot"><td>TOTAL</td><td>${g.a[2]}</td><td>${g.b[2]}</td></tr></table></div>`:"";
       return `<div class="gcard${g.q?" expandable":""}"${g.q?" onclick=\"this.classList.toggle('open')\"":""}><div class="g-top"><span>${esc(g.l)}</span><span>${g.a[2]>0?'<span class="final">FINAL</span>':""}${g.q?' <span class="qhint">＋</span>':""}</span></div>${t(g.a,aw)}${t(g.b,bw)}${qtab}</div>`;
     }).join("");
+    el.innerHTML = h;
   }else{
-    h += `<div class="gcard offcard"><div class="g-top"><span>TEMPORADA 2026 · FINALIZADA</span></div><div class="off-champ"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f7e012" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 6H4a1 1 0 0 0-1 1c0 2.5 2 4.2 4 4.2"/><path d="M17 6h3a1 1 0 0 1 1 1c0 2.5-2 4.2-4 4.2"/></svg>CAMPEÓN 2026</div><div class="off-title">VAQUEROS DE BAYAMÓN</div><div class="off-sub">Los resultados regresan en la temporada 2027</div></div>`;
+    el.classList.add("is-empty");
+    el.innerHTML = `<div class="scores-empty"><span class="sbadge">RESULTADOS</span><h3>TEMPORADA 2026 FINALIZADA</h3><p class="empty-champ"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#f7e012" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 6H4a1 1 0 0 0-1 1c0 2.5 2 4.2 4 4.2"/><path d="M17 6h3a1 1 0 0 1 1 1c0 2.5-2 4.2-4 4.2"/></svg>VAQUEROS DE BAYAMÓN · CAMPEONES 2026</p><p class="empty-sub">Aquí verás los marcadores cuando arranque la temporada 2027</p></div>`;
   }
-  el.innerHTML = h;
 }
 function renderNews(){
   const news = allNews();
