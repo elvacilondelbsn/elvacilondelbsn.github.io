@@ -140,6 +140,15 @@ const $ = (id) => document.getElementById(id);
 const store = sessionStorage;
 
 const SECTIONS = {
+  resultados: { label: "Resultados", fields: [
+    {k:"label",label:"Etiqueta (ej: AYER · FINAL)",t:"text",meta:1,ph:"Ej: AYER · FINAL"},
+    {k:"team_a",label:"Equipo A",t:"text",req:1,meta:1,ph:"Ej: Vaqueros"},
+    {k:"score_a",label:"Puntos A",t:"number",meta:1,ph:"Ej: 91"},
+    {k:"team_b",label:"Equipo B",t:"text",req:1,meta:1,ph:"Ej: Santeros"},
+    {k:"score_b",label:"Puntos B",t:"number",meta:1,ph:"Ej: 75"},
+    {k:"sort_order",label:"Orden (menor sale primero)",t:"number"},
+    {k:"is_published",label:"Publicado",t:"check"}
+  ]},
   noticias: { label: "Noticias", fields: [
     {k:"title",label:"Titular",t:"text",req:1},
     {k:"subtitle",label:"Entradilla",t:"text"},
@@ -186,7 +195,7 @@ const SECTIONS = {
     {k:"is_published",label:"Publicado",t:"check"}
   ]}
 };
-const ORDER = ["noticias","cambios","firmas","agencia_libre","franquicias"];
+const ORDER = ["resultados","noticias","cambios","firmas","agencia_libre","franquicias"];
 let CUSTOM = []; // secciones creadas por el cliente: [{key,title,items}]
 const GFIELDS = [
   {k:"title",label:"Titular",t:"text",req:1},
@@ -400,7 +409,7 @@ function openForm(it){
     else { inp=document.createElement("input"); inp.type=f.t; if(f.ph) inp.placeholder=f.ph; }
     inp.id="ff-"+f.k;
     let v = f.meta ? (meta[f.k]||"") : (it? (it[f.k]??"") : "");
-    if(f.t==="number") v = it? (it.sort_order||0) : 0;
+    if(f.t==="number" && !f.meta) v = it? (it.sort_order||0) : 0;
     inp.value=v;
     wrap.appendChild(inp); F.appendChild(wrap);
   });
