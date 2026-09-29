@@ -206,21 +206,38 @@ tr.lead .pos{color:var(--yellow)}
 .tfilter{display:flex;gap:10px;margin:2px 0 22px;flex-wrap:wrap}
 .tfilter button{font-family:'Oswald';font-size:13px;letter-spacing:2px;padding:9px 20px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;transition:.25s}
 .tfilter button.on{background:var(--yellow);border-color:var(--yellow);color:var(--ink);font-weight:700}
-/* ---------- los números (estadísticas) ---------- */
-.leaders{display:flex;flex-direction:column;gap:12px;max-width:860px}
-.lrow{display:flex;align-items:center;gap:16px;background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:16px;padding:14px 20px;transition:transform .25s ease,border-color .25s ease}
-.lrow:hover{transform:translateX(6px);border-color:rgba(247,224,18,.4)}
-.lrank{font-family:'Oswald';font-size:30px;font-weight:700;color:var(--muted);min-width:44px;text-align:center}
-.lrow.top1{background:linear-gradient(160deg,rgba(247,224,18,.14),rgba(247,224,18,.03));border-color:rgba(247,224,18,.55);padding:20px 22px}
-.lrow.top1 .lrank{font-size:44px;color:var(--yellow)}
-.lwho{flex:1;min-width:0}
-.lname{font-family:'Oswald';font-size:20px;letter-spacing:1px;color:#fff;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lrow.top1 .lname{font-size:26px}
-.lteam{font-size:13px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
-.lval{font-family:'Oswald';font-size:34px;font-weight:700;color:var(--yellow);min-width:90px;text-align:right}
-.lrow.top1 .lval{font-size:46px}
-.lval small{display:block;font-size:11px;letter-spacing:2px;color:var(--muted);font-weight:400}
-.lsub{font-size:12px;color:var(--muted);letter-spacing:1px;margin-top:2px}
+/* ---------- los números (estadísticas): brutal ---------- */
+#statCats{gap:12px;margin:6px 0 28px}
+#statCats button{font-size:15px;font-weight:700;letter-spacing:2px;padding:13px 26px;border-radius:10px;border:2px solid var(--line);background:rgba(255,255,255,.03);transform:skewX(-10deg);transition:.2s}
+#statCats button.on{background:var(--yellow);border-color:var(--yellow);color:#0a0a0a;box-shadow:0 6px 24px rgba(247,224,18,.35)}
+.leaders{display:flex;flex-direction:column;gap:14px;max-width:920px}
+.lhero{position:relative;overflow:hidden;border-radius:20px;padding:34px 34px 30px;border:2px solid rgba(247,224,18,.6);background:linear-gradient(140deg,rgba(247,224,18,.13),rgba(247,224,18,.02) 60%,rgba(0,0,0,0));box-shadow:0 10px 40px rgba(247,224,18,.12)}
+.lhero-rank{position:absolute;right:8px;top:-34px;font-family:'Oswald';font-weight:700;font-size:clamp(150px,24vw,260px);line-height:1;color:transparent;-webkit-text-stroke:2px rgba(247,224,18,.30);pointer-events:none;user-select:none}
+.lhero-grid{display:flex;align-items:center;justify-content:space-between;gap:24px;position:relative;z-index:1}
+.lhero-tag{display:inline-block;font-family:'Oswald';font-size:12px;letter-spacing:3px;font-weight:700;color:#0a0a0a;background:var(--yellow);padding:6px 14px;border-radius:6px;transform:skewX(-10deg);margin-bottom:14px}
+.lhero-name{font-family:'Oswald';font-size:clamp(38px,6vw,64px);font-weight:700;letter-spacing:1px;color:#fff;margin:0;line-height:1.02;text-transform:uppercase}
+.lhero-team{font-size:14px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:10px}
+.lhero-sub{font-size:13px;color:var(--muted);letter-spacing:1px;margin-top:10px}
+.lhero-val{font-family:'Oswald';font-weight:700;font-size:clamp(72px,11vw,120px);line-height:1;color:var(--yellow);text-shadow:0 0 34px rgba(247,224,18,.35);text-align:right;white-space:nowrap}
+.lhero-val small{display:block;font-size:12px;letter-spacing:4px;color:var(--muted);font-weight:400;text-shadow:none;margin-top:8px}
+.lrow2{display:flex;align-items:center;gap:18px;background:rgba(255,255,255,.025);border:1px solid var(--line);border-left:5px solid rgba(247,224,18,.55);border-radius:14px;padding:16px 22px;transition:transform .25s ease,background .25s ease}
+.lrow2:hover{transform:translateX(6px);background:rgba(255,255,255,.05)}
+.lrow2-rank{font-family:'Oswald';font-size:34px;font-weight:700;color:transparent;-webkit-text-stroke:1.5px var(--muted);min-width:52px;text-align:center}
+.lrow2-main{flex:1;min-width:0}
+.lrow2-name{font-family:'Oswald';font-size:21px;letter-spacing:1px;color:#fff;margin:0 0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lrow2-name span{font-size:12px;color:var(--muted);letter-spacing:2px;margin-left:10px}
+.lbar{height:9px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden}
+.lbar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--yellow),#ff9d2e);box-shadow:0 0 12px rgba(247,224,18,.45)}
+.lrow2-val{font-family:'Oswald';font-size:36px;font-weight:700;color:#fff;min-width:86px;text-align:right}
+@media(max-width:640px){
+  .lhero{padding:26px 22px}
+  .lhero-grid{flex-direction:column;align-items:flex-start;gap:14px}
+  .lhero-val{text-align:left}
+  .lrow2{gap:12px;padding:14px 16px}
+  .lrow2-rank{font-size:26px;min-width:40px}
+  .lrow2-name{font-size:17px}
+  .lrow2-val{font-size:28px;min-width:70px}
+}
 .stats-empty{border:2px dashed rgba(247,224,18,.35);border-radius:20px;padding:48px 24px;text-align:center;max-width:860px}
 .stats-empty h3{font-family:'Oswald';font-size:28px;letter-spacing:2px;color:var(--yellow);margin:0 0 10px}
 .stats-empty p{color:var(--muted);margin:0;font-size:15px}
@@ -1190,17 +1207,29 @@ function renderStats(){
   }
   const top = STATS.slice().sort((a,b)=>b[statCat]-a[statCat]).slice(0,5);
   const lbl = STAT_CATS[statCat]||"";
-  el.innerHTML = top.map((s,i)=>{
-    const others = ["pts","reb","ast","stl","blk"].filter(k=>k!==statCat)
-      .map(k=>s[k].toFixed(1)+" "+STAT_CATS[k]).join(" · ");
-    return '<div class="lrow'+(i===0?" top1":"")+'">'+
-      '<div class="lrank">'+String(i+1).padStart(2,"0")+'</div>'+
-      '<div class="lwho"><p class="lname">'+esc(s.name)+'</p>'+
-      '<div class="lteam">'+esc(s.team+(s.pos?" · "+s.pos:""))+'</div>'+
-      (others?'<div class="lsub">'+others+'</div>':"")+'</div>'+
-      '<div class="lval">'+s[statCat].toFixed(1)+'<small>'+lbl+' POR JUEGO</small></div>'+
+  const cats = ["pts","reb","ast","stl","blk"];
+  const teamPos = s => s.team+(s.pos?" · "+s.pos:"");
+  const hero = top[0];
+  const heroOthers = cats.filter(k=>k!==statCat && hero[k]>0)
+    .map(k=>hero[k].toFixed(1)+" "+STAT_CATS[k]).join(" · ");
+  let h = '<div class="lhero"><div class="lhero-rank">01</div><div class="lhero-grid"><div class="lhero-main">'+
+    '<div class="lhero-tag">LÍDER · '+lbl+'</div>'+
+    '<p class="lhero-name">'+esc(hero.name)+'</p>'+
+    '<div class="lhero-team">'+esc(teamPos(hero))+'</div>'+
+    (heroOthers?'<div class="lhero-sub">'+heroOthers+'</div>':"")+'</div>'+
+    '<div class="lhero-val">'+hero[statCat].toFixed(1)+'<small>'+lbl+' POR JUEGO</small></div>'+
+    '</div></div>';
+  const max = hero[statCat]||1;
+  h += top.slice(1).map((s,i)=>{
+    const w = Math.max(5, Math.round(s[statCat]/max*100));
+    return '<div class="lrow2">'+
+      '<div class="lrow2-rank">'+String(i+2).padStart(2,"0")+'</div>'+
+      '<div class="lrow2-main"><p class="lrow2-name">'+esc(s.name)+'<span>'+esc(teamPos(s))+'</span></p>'+
+      '<div class="lbar"><i style="width:'+w+'%"></i></div></div>'+
+      '<div class="lrow2-val">'+s[statCat].toFixed(1)+'</div>'+
     '</div>';
   }).join("");
+  el.innerHTML = h;
 }
 function renderMarquee(){
   const el = $("marquee"); if(!el) return;
