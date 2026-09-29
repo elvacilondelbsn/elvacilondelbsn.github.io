@@ -214,11 +214,11 @@ tr.lead .pos{color:var(--yellow)}
 #statCats button{font-size:15px;font-weight:700;letter-spacing:2px;padding:13px 26px;border-radius:10px;border:2px solid var(--line);background:rgba(255,255,255,.03);transform:skewX(-10deg);transition:.2s}
 #statCats button.on{background:var(--yellow);border-color:var(--yellow);color:#0a0a0a;box-shadow:0 6px 24px rgba(247,224,18,.35)}
 .leaders{display:flex;flex-direction:column;gap:14px}
-.lhero{position:relative;overflow:hidden;border-radius:20px;padding:34px 34px 30px;min-height:290px;border:2px solid rgba(247,224,18,.6);background:linear-gradient(140deg,rgba(247,224,18,.13),rgba(247,224,18,.02) 60%,rgba(0,0,0,0));box-shadow:0 10px 40px rgba(247,224,18,.12)}
+.lhero{position:relative;overflow:hidden;border-radius:20px;padding:34px 34px 30px;min-height:300px;border:2px solid rgba(247,224,18,.6);background:linear-gradient(140deg,rgba(247,224,18,.13),rgba(247,224,18,.02) 60%,rgba(0,0,0,0));box-shadow:0 10px 40px rgba(247,224,18,.12)}
 .lhero-foto{position:absolute;top:0;right:0;bottom:0;width:62%;z-index:0;pointer-events:none}
 .lhero-foto img{width:100%;height:100%;object-fit:cover;object-position:50% 22%;opacity:.5;-webkit-mask-image:linear-gradient(100deg,transparent 0,#000 52%);mask-image:linear-gradient(100deg,transparent 0,#000 52%)}
-.lhero-foto.wide{width:46%;top:-8%;bottom:-8%}
-.lhero-foto.wide img{object-fit:contain;object-position:50% 50%;opacity:.62;-webkit-mask-image:radial-gradient(115% 115% at 50% 50%,#000 58%,transparent 98%);mask-image:radial-gradient(115% 115% at 50% 50%,#000 58%,transparent 98%)}
+.lhero-foto.wide{width:34%;top:-10%;bottom:-10%}
+.lhero-foto.wide img{object-fit:cover;object-position:50% 18%;opacity:.5;-webkit-mask-image:linear-gradient(100deg,transparent 0,#000 55%);mask-image:linear-gradient(100deg,transparent 0,#000 55%)}
 @media(max-width:640px){.lhero{min-height:250px}.lhero-foto{width:100%}.lhero-foto img{opacity:.3;-webkit-mask-image:linear-gradient(100deg,transparent 0,#000 68%);mask-image:linear-gradient(100deg,transparent 0,#000 68%)}.lhero-foto.wide{width:100%;top:0;bottom:0}.lhero-foto.wide img{object-fit:cover;object-position:50% 30%;opacity:.32}}
 .lhero-rank{position:absolute;right:8px;top:-34px;z-index:1;font-family:'Oswald';font-weight:700;font-size:clamp(150px,24vw,260px);line-height:1;color:transparent;-webkit-text-stroke:2px rgba(247,224,18,.30);pointer-events:none;user-select:none}
 .lhero-grid{display:flex;align-items:center;justify-content:space-between;gap:24px;position:relative;z-index:1}
@@ -531,6 +531,7 @@ footer ul a:hover{color:var(--yellow)}
       <button data-tf="FIRMA">FIRMAS</button>
       <button data-tf="AGENCIA LIBRE">AGENCIA LIBRE</button>
       <button data-tf="FRANQUICIA">FRANQUICIAS</button>
+      <button data-tf="DIRIGENTE">DIRIGENTES</button>
     </div>
     <div class="trades" id="trades"></div>
   </div>
@@ -689,7 +690,19 @@ let TRADES = [
    url:"https://www.primerahora.com/deportes/baloncesto/notas/que-jugadores-entraran-a-la-agencia-libre-del-bsn-conoce-la-lista-hasta-ahora/", src:"Primera Hora"},
   {jug:"Indios de Mayagüez", de:"Indios de Mayagüez", a:"Gallitos de Isabela", tipo:"FRANQUICIA", cc:"red", fecha:"25 SEP 2026", rej:true,
    det:"La Junta del BSN rechazó la petición del apoderado Dion New de trasladar la franquicia a Isabela para 2027: no alcanzó los dos tercios de los votos requeridos. Los Indios se quedan en Mayagüez.",
-   url:"https://www.elnuevodia.com/deportes/baloncesto/notas/el-bsn-rechaza-la-mudanza-de-los-indios-de-mayaguez-a-isabela/", src:"El Nuevo Día"}
+   url:"https://www.elnuevodia.com/deportes/baloncesto/notas/el-bsn-rechaza-la-mudanza-de-los-indios-de-mayaguez-a-isabela/", src:"El Nuevo Día"},
+  {jug:"Carlos González", de:"Gigantes de Carolina", a:"Cangrejeros de Santurce", tipo:"DIRIGENTE", cc:"blue", fecha:"8 SEP 2026",
+   det:"Renunció a los Gigantes junto a su asistente Leo Arill en agosto, tras dirigirlos desde 2022 y darles su primer campeonato en 2023. Será el décimo dirigente de Santurce desde el regreso de la franquicia en 2021.",
+   url:"https://www.primerahora.com/deportes/baloncesto/notas/carlos-gonzalez-dirigira-a-los-cangrejeros-a-partir-de-la-proxima-temporada-del-bsn/", src:"Primera Hora"},
+  {jug:"Juan Cardona", de:"Capitanes de Arecibo", a:"Gigantes de Carolina", tipo:"DIRIGENTE", cc:"blue", fecha:"SEP 2026",
+   det:"Salió de la dirección técnica de Arecibo para asumir el mando de los Gigantes de Carolina-Canóvanas.",
+   url:"https://www.elnuevodia.com/deportes/baloncesto/notas/larry-ayuso-con-un-pie-en-la-direccion-tecnica-de-los-capitanes-de-arecibo-en-el-bsn/", src:"El Nuevo Día"},
+  {jug:"Ángel Daniel Vassallo", de:"Piratas de Quebradillas", a:"", tipo:"DIRIGENTE", cc:"blue", fecha:"AGO 2026",
+   det:"Los Piratas anunciaron su salida tras una temporada de 10-24, la peor marca de la liga. Debutó como dirigente este año tras ser asistente en 2025; el equipo apunta a Brad Greenberg para 2027.",
+   url:"https://www.elnuevodia.com/deportes/baloncesto/notas/angel-daniel-vassallo-sale-de-la-direccion-de-los-piratas-quienes-apuntan-a-brad-greenberg/", src:"El Nuevo Día"},
+  {jug:"Rafael \u00abPachy\u00bb Cruz", de:"Osos de Manatí", a:"Santeros de Aguada", tipo:"DIRIGENTE", cc:"blue", fecha:"NOV 2025",
+   det:"Tres veces campeón del BSN, fue anunciado como nuevo dirigente de Aguada para la temporada 2026.",
+   url:"https://www.elnuevodia.com/deportes/baloncesto/notas/bsn-pachy-cruz-dirigira-a-los-santeros-de-aguada/", src:"El Nuevo Día"}
 ];
 const tlogo = t => LOGOS[t]
   ? `<img src="${LOGOS[t]}" alt="${esc(t)}" loading="lazy">`
@@ -843,6 +856,15 @@ function tradeCard(t){
         <div class="swap-side">${tlogo(t.de)}<div class="swap-team">${esc(t.de).toUpperCase()}</div><div class="swap-get">SE QUEDA EN</div><div class="swap-name">MAYAGÜEZ</div></div>
         <div class="swap-mid no">${NO_SVG}</div>
         <div class="swap-side">${tlogo(t.a)}<div class="swap-team">${esc(t.a).toUpperCase()}</div><div class="swap-get">DESTINO</div><div class="swap-name">ISABELA</div></div>
+      </div></div>${foot}</article>`;
+  }
+  if(t.tipo==="DIRIGENTE"){
+    const libre = !t.a;
+    return `<article class="trade rv">${head}
+      <div class="swap"><div class="swap-eyebrow">${libre?"SALIDA DE DIRIGENTE":"CAMBIO DE DIRIGENTE"}</div><div class="swap-grid">
+        <div class="swap-side">${tlogo(t.de)}<div class="swap-team">${esc(t.de).toUpperCase()}</div><div class="swap-get">DEJA A</div></div>
+        <div class="swap-mid">${GO_SVG}</div>
+        <div class="swap-side">${libre?`<span class="swap-fa">${USER_SVG}</span>`:tlogo(t.a)}<div class="swap-team">${esc(libre?"SIN EQUIPO":t.a).toUpperCase()}</div><div class="swap-get">${libre?"QUEDA LIBRE":"NUEVO DIRIGENTE"}</div><div class="swap-name">${esc(t.jug)}</div></div>
       </div></div>${foot}</article>`;
   }
   return `<article class="trade rv">${head}<h3>${esc(t.jug)}</h3>${foot}</article>`;
@@ -1265,7 +1287,7 @@ async function cargarContenido(){
     const ctrl = new AbortController();
     const to = setTimeout(()=>ctrl.abort(), 7000);
     const get = s => fetch(API_URL + "/api/content?section=" + s, {signal: ctrl.signal}).then(r => r.json());
-    const [rN, rC, rF, rQ, rA, rR] = await Promise.all([get("noticias"), get("cambios"), get("firmas"), get("franquicias"), get("agencia_libre"), get("resultados")]);
+    const [rN, rC, rF, rQ, rA, rR, rD] = await Promise.all([get("noticias"), get("cambios"), get("firmas"), get("franquicias"), get("agencia_libre"), get("resultados"), get("dirigentes")]);
     clearTimeout(to);
     const items = r => (r && r.ok && Array.isArray(r.items)) ? r.items : [];
     const pM = x => { try { const m = x.meta; return m ? (typeof m === "string" ? JSON.parse(m) : m) : {}; } catch { return {}; } };
@@ -1283,7 +1305,7 @@ async function cargarContenido(){
         tipo, cc: m.cc || "", fecha: x.subtitle || "", det: x.body || "",
         url: m.url || "", src: m.src || "", rej: !!m.rej });
     });
-    pushT(items(rC), "CAMBIO"); pushT(items(rF), "FIRMA"); pushT(items(rQ), "FRANQUICIA");
+    pushT(items(rC), "CAMBIO"); pushT(items(rF), "FIRMA"); pushT(items(rQ), "FRANQUICIA"); pushT(items(rD), "DIRIGENTE");
     if (T.length) TRADES = T;
     const A = items(rA);
     if (A.length){
@@ -1321,7 +1343,7 @@ async function cargarContenido(){
     // Secciones personalizadas creadas por el cliente desde el panel
     try{
       const rS = await fetch(API_URL + "/api/custom-sections", {signal: ctrl.signal}).then(r => r.json());
-      const secs = (rS && rS.ok && Array.isArray(rS.sections)) ? rS.sections.filter(s=>s.key!=="estadisticas") : [];
+      const secs = (rS && rS.ok && Array.isArray(rS.sections)) ? rS.sections.filter(s=>s.key!=="estadisticas" && s.key!=="dirigentes") : [];
       const rSecs = await Promise.all(secs.map(s =>
         fetch(API_URL + "/api/content?section=" + encodeURIComponent(s.key), {signal: ctrl.signal}).then(r => r.json()).catch(()=>null)
       ));
