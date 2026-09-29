@@ -948,14 +948,17 @@ function initNewsCarousel(){
   R.addEventListener("pointerenter", e=>{ if(e.pointerType==="mouse") stop(); });
   R.addEventListener("pointerleave", e=>{ if(e.pointerType==="mouse") poke(); });
   R.addEventListener("pointerdown", e=>{
+    if(e.pointerType!=="mouse") return; // en táctil el scroll nativo ya funciona
     st.down=true; st.moved=false; st.sx=e.clientX; st.sl=R.scrollLeft;
     R.classList.add("dragging"); stop();
-    try{ R.setPointerCapture(e.pointerId); }catch(_){}
   });
   R.addEventListener("pointermove", e=>{
     if(!st.down) return;
     const dx = e.clientX - st.sx;
-    if(Math.abs(dx)>6) st.moved=true;
+    if(Math.abs(dx)>6 && !st.moved){
+      st.moved=true;
+      try{ R.setPointerCapture(e.pointerId); }catch(_){}
+    }
     if(st.moved) R.scrollLeft = st.sl - dx;
   });
   const endDrag = ()=>{ if(!st.down) return; st.down=false; R.classList.remove("dragging"); syncFromScroll(); poke(); };
