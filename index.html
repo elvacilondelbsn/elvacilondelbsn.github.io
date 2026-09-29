@@ -71,7 +71,7 @@ nav.main a.on{color:var(--ink);background:var(--yellow)}
 .quarters td:first-child,.quarters th:first-child{text-align:left;color:var(--muted);letter-spacing:1.5px;font-size:10px}
 .quarters tr.tot td{border-top:1px solid var(--line);font-weight:700}
 .quarters tr.tot td:not(:first-child){color:var(--yellow);font-size:15px}
-.offbadge{font-family:'Oswald';font-weight:700;font-size:15px;letter-spacing:3px;color:#0a0a0a;background:var(--yellow);padding:9px 20px;transform:skewX(-10deg);display:flex;align-items:center;white-space:nowrap;box-shadow:0 0 26px rgba(247,224,18,.30)}
+.sbadge{font-family:'Oswald';font-weight:700;font-size:15px;letter-spacing:3px;color:#0a0a0a;background:var(--yellow);padding:9px 20px;transform:skewX(-10deg);display:flex;align-items:center;white-space:nowrap;box-shadow:0 0 26px rgba(247,224,18,.30)}
 .offcard{min-width:300px;position:relative;overflow:hidden;background:linear-gradient(135deg,#0b2258 0%,#051d49 55%,#0a0f30 100%);border:1px solid rgba(247,224,18,.5);box-shadow:0 0 34px rgba(247,224,18,.14),inset 0 0 46px rgba(247,224,18,.05)}
 .offcard::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-45deg,transparent 0 12px,rgba(247,224,18,.055) 12px 14px);pointer-events:none}
 .offcard>*{position:relative}
@@ -980,10 +980,7 @@ const allNews = () => NEWS;
 function renderScores(){
   const el = $("scoreRow"); if(!el) return;
   const has = SCORES.length>0;
-  const badge = has ? "RESULTADOS" : "OFF SEASON";
-  let h = has
-    ? '<span class="gcard" style="display:flex;align-items:center;background:var(--yellow);color:var(--ink);font-family:Oswald;letter-spacing:2px;font-weight:700;min-width:auto">'+badge+'</span>'
-    : '<span class="offbadge">'+badge+'</span>';
+  let h = '<span class="sbadge">RESULTADOS</span>';
   if(has){
     h += SCORES.map(g=>{
       const t=(x,win)=>`<div class="gteam${win?' win':''}"><span class="tn"><span class="gdot" style="background:${x[3]}"></span>${esc(x[1])}</span><span class="sc">${x[2]||"–"}</span></div>`;
@@ -994,7 +991,7 @@ function renderScores(){
       return `<div class="gcard${g.q?" expandable":""}"${g.q?" onclick=\"this.classList.toggle('open')\"":""}><div class="g-top"><span>${esc(g.l)}</span><span>${g.a[2]>0?'<span class="final">FINAL</span>':""}${g.q?' <span class="qhint">＋</span>':""}</span></div>${t(g.a,aw)}${t(g.b,bw)}${qtab}</div>`;
     }).join("");
   }else{
-    h += `<div class="gcard offcard"><div class="g-top"><span>TEMP. 2026 · FINALIZADA</span></div><div class="off-champ"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f7e012" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 6H4a1 1 0 0 0-1 1c0 2.5 2 4.2 4 4.2"/><path d="M17 6h3a1 1 0 0 1 1 1c0 2.5-2 4.2-4 4.2"/></svg>CAMPEÓN 2026</div><div class="off-title">VAQUEROS DE BAYAMÓN</div><div class="off-sub">LA 2027 VIENE EN CAMINO</div></div>`;
+    h += `<div class="gcard offcard"><div class="g-top"><span>TEMPORADA 2026 · FINALIZADA</span></div><div class="off-champ"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f7e012" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 6H4a1 1 0 0 0-1 1c0 2.5 2 4.2 4 4.2"/><path d="M17 6h3a1 1 0 0 1 1 1c0 2.5-2 4.2-4 4.2"/></svg>CAMPEÓN 2026</div><div class="off-title">VAQUEROS DE BAYAMÓN</div><div class="off-sub">Los resultados regresan en la temporada 2027</div></div>`;
   }
   el.innerHTML = h;
 }
