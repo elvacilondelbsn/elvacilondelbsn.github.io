@@ -538,7 +538,7 @@ footer ul a:hover{color:var(--yellow)}
     <div class="trib-grid">
       <div class="poll rv">
         <h3>¿Quién se lleva la serie?</h3>
-        <p>Encuesta de la semana · EJEMPLO</p>
+        <p>Encuesta de la semana</p>
         <div id="pollOpts"></div>
       </div>
       <div class="takes">
@@ -553,10 +553,11 @@ footer ul a:hover{color:var(--yellow)}
 <div class="nl-band rv">
   <div class="nl-in">
     <h2>No te pierdas ni un tapón</h2>
-    <form class="nl-form" onsubmit="event.preventDefault();this.reset();alert('¡Gracias por suscribirte al Vacilón!')">
-      <input type="email" placeholder="tu@correo.com" required>
+    <form class="nl-form" id="nlForm" onsubmit="subscribeNL(event)">
+      <input type="email" id="nlEmail" placeholder="tu@correo.com" required>
       <button type="submit">QUIERO EL VACILÓN</button>
     </form>
+    <p class="nl-msg" id="nlMsg" style="font-size:14px;margin-top:10px;min-height:20px"></p>
   </div>
 </div>
 
@@ -863,7 +864,19 @@ const ROSTERS = {
   "Indios de Mayagüez":["Jonathan García","Nathan Sobey","Neftalí Álvarez","Yahir Cordero","Nick Lucena","Jared Ruiz","Benito Santiago Jr.","José Placer","Luis Henríquez","Miye Oni","Bradley Camacho","Josué Erazo","Luis Cuascut","Sam Waardenburg","Kevin Allen","Tyrell Harrison","Carlos Yao López","Chris Gastón"],
   "Piratas de Quebradillas":["Gaby Belardo","Josh Vázquez","William Cruz","Fabián Rivera","Jay S. Álvarez","Emmanuel Mudiay","Anthony Cambo Jr.","Gian Clavell","Víctor Liz","Dimencio Vaughn","Carlos Emory","Jayden Martínez","Phillip Wheeler","Derek Reese","José Román","Ibrahim Sylla"]
 };
-const POLL = {q:"¿Quién se lleva la serie?", opts:[["Vaqueros de Bayamón",0],["Criollos de Caguas",0],["Atléticos de San Germán",0],["Otro equipo",0]]};
+let POLL = {id:null, q:"¿Quién se lleva la serie?", opts:[["Vaqueros de Bayamón",0],["Criollos de Caguas",0],["Atléticos de San Germán",0],["Otro equipo",0]]};
+function voterId(){ try{ let v=localStorage.getItem("vacilon2_voter"); if(!v){ v=(crypto.randomUUID?crypto.randomUUID():"v"+Date.now().toString(36)+Math.random().toString(36).slice(2)); localStorage.setItem("vacilon2_voter",v); } return v; }catch(e){ return "anon"; } }
+function myVote(){ try{ const v=localStorage.getItem("vacilon2_poll"+(POLL.id||"")); return v===null?null:parseInt(v,10); }catch(e){ return null; } }
+async function loadPoll(){
+  try{
+    const j = await fetch(API_URL+"/api/poll").then(r=>r.json());
+    if(j.ok && j.poll){
+      POLL = { id:j.poll.id, q:j.poll.question, opts:j.poll.options.map(o=>[o.text,o.votes]) };
+      const h=document.querySelector(".poll h3"); if(h) h.textContent=POLL.q;
+      renderPoll();
+    }
+  }catch(e){}
+}
 
 /* ================= HELPERS ================= */
 const $ = id => document.getElementById(id);
@@ -1052,21 +1065,37 @@ function bindCards(){
 }
 function renderPoll(){
   const el = $("pollOpts"); if(!el) return;
-  let votes = null;
-  try{ votes = JSON.parse(localStorage.getItem("vacilon2_poll")||"null"); }catch(e){}
-  const total = POLL.opts.reduce((s,o)=>s+o[1],0) + (votes?1:0);
+  const v = myVote();
+  const total = POLL.opts.reduce((s,o)=>s+o[1],0);
   el.innerHTML = POLL.opts.map((o,i)=>{
-    const v = o[1] + (votes===i?1:0);
-    const pct = total? Math.round(v/total*100):0;
-    return `<button class="opt${votes!==null?" voted":""}" ${votes!==null?"disabled":""} onclick="vote(${i})">
-      <span class="bar" style="width:${votes!==null?pct:0}%"></span>
-      <span class="lbl"><span>${esc(o[0])}</span><span>${votes!==null?pct+"%":""}</span></span>
+    const pct = total? Math.round(o[1]/total*100):0;
+    return `<button class="opt${v!==null?" voted":""}" ${v!==null?"disabled":""} onclick="vote(${i})">
+      <span class="bar" style="width:${v!==null?pct:0}%"></span>
+      <span class="lbl"><span>${esc(o[0])}</span><span>${v!==null?pct+"%":""}</span></span>
     </button>`;
   }).join("");
 }
-function vote(i){
-  try{ localStorage.setItem("vacilon2_poll", JSON.stringify(i)); }catch(e){}
+async function vote(i){
+  if(myVote()!==null) return;
+  try{ localStorage.setItem("vacilon2_poll"+(POLL.id||""), JSON.stringify(i)); }catch(e){}
   renderPoll();
+  if(POLL.id){
+    try{ await fetch(API_URL+"/api/poll/vote",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({poll_id:POLL.id,option:i,voter:voterId()})}); }catch(e){}
+    loadPoll();
+  }
+}
+async function subscribeNL(e){
+  e.preventDefault();
+  const em = $("nlEmail").value.trim();
+  const msg = $("nlMsg");
+  msg.style.color = "var(--muted)"; msg.textContent = "Suscribiendo…";
+  try{
+    const r = await fetch(API_URL+"/api/subscribe",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({email:em})});
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error||"Error");
+    msg.style.color = "var(--yellow)"; msg.textContent = "¡Gracias! Ya eres parte del Vacilón.";
+    $("nlForm").reset();
+  }catch(err){ msg.style.color = "#ff8f8d"; msg.textContent = "Ese correo no parece válido. Inténtalo de nuevo."; }
 }
 function renderMarquee(){
   const el = $("marquee"); if(!el) return;
@@ -1200,6 +1229,7 @@ function renderCustomSections(){
     ref.after(s); ref = s;
   });
 }
+loadPoll();
 cargarContenido().finally(()=>{
   renderScores(); renderNews(); renderCustomSections(); renderTrades(); renderRace(); renderTeams(); renderPoll(); renderMarquee(); observeRv();
 });
