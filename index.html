@@ -71,10 +71,14 @@ nav.main a.on{color:var(--ink);background:var(--yellow)}
 .quarters td:first-child,.quarters th:first-child{text-align:left;color:var(--muted);letter-spacing:1.5px;font-size:10px}
 .quarters tr.tot td{border-top:1px solid var(--line);font-weight:700}
 .quarters tr.tot td:not(:first-child){color:var(--yellow);font-size:15px}
-.offcard{min-width:270px}
-.off-title{font-family:'Oswald';font-size:19px;letter-spacing:1px;color:var(--yellow);margin-top:2px}
-.off-sub{color:var(--muted);font-size:11px;margin-top:5px;letter-spacing:1.5px;font-family:'Oswald'}
-.offbadge{font-family:'Oswald';font-weight:700;font-size:32px;letter-spacing:3px;color:transparent;-webkit-text-stroke:1.5px rgba(247,224,18,.65);display:flex;align-items:center;white-space:nowrap;line-height:1;padding:2px 8px}
+.offbadge{font-family:'Oswald';font-weight:700;font-size:15px;letter-spacing:3px;color:#0a0a0a;background:var(--yellow);padding:9px 20px;transform:skewX(-10deg);display:flex;align-items:center;white-space:nowrap;box-shadow:0 0 26px rgba(247,224,18,.30)}
+.offcard{min-width:300px;position:relative;overflow:hidden;background:linear-gradient(135deg,#0b2258 0%,#051d49 55%,#0a0f30 100%);border:1px solid rgba(247,224,18,.5);box-shadow:0 0 34px rgba(247,224,18,.14),inset 0 0 46px rgba(247,224,18,.05)}
+.offcard::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-45deg,transparent 0 12px,rgba(247,224,18,.055) 12px 14px);pointer-events:none}
+.offcard>*{position:relative}
+.off-champ{display:flex;align-items:center;gap:9px;font-family:'Oswald';font-weight:700;font-size:24px;letter-spacing:2px;color:#f7e012;margin-top:2px}
+@supports ((-webkit-background-clip:text) or (background-clip:text)){.off-champ{background:linear-gradient(180deg,#ffe45e,#f7e012 55%,#c98f0a);-webkit-background-clip:text;background-clip:text;color:transparent}}
+.off-title{font-family:'Oswald';font-size:19px;letter-spacing:1px;color:#fff;margin-top:4px}
+.off-sub{color:var(--muted);font-size:11px;margin-top:6px;letter-spacing:1.5px;font-family:'Oswald'}
 .foot-soc{display:flex;gap:16px;margin-top:14px}
 .foot-soc a{color:var(--muted);opacity:.85;transition:.2s;display:inline-flex}
 .foot-soc a:hover{color:var(--yellow);opacity:1}
@@ -990,7 +994,7 @@ function renderScores(){
       return `<div class="gcard${g.q?" expandable":""}"${g.q?" onclick=\"this.classList.toggle('open')\"":""}><div class="g-top"><span>${esc(g.l)}</span><span>${g.a[2]>0?'<span class="final">FINAL</span>':""}${g.q?' <span class="qhint">＋</span>':""}</span></div>${t(g.a,aw)}${t(g.b,bw)}${qtab}</div>`;
     }).join("");
   }else{
-    h += `<div class="gcard offcard"><div class="g-top"><span>TEMP. 2026 · FINALIZADA</span></div><div class="off-title">VAQUEROS DE BAYAMÓN</div><div class="off-sub">CAMPEÓN 2026 · LA 2027 VIENE EN CAMINO</div></div>`;
+    h += `<div class="gcard offcard"><div class="g-top"><span>TEMP. 2026 · FINALIZADA</span></div><div class="off-champ"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f7e012" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 6H4a1 1 0 0 0-1 1c0 2.5 2 4.2 4 4.2"/><path d="M17 6h3a1 1 0 0 1 1 1c0 2.5-2 4.2-4 4.2"/></svg>CAMPEÓN 2026</div><div class="off-title">VAQUEROS DE BAYAMÓN</div><div class="off-sub">LA 2027 VIENE EN CAMINO</div></div>`;
   }
   el.innerHTML = h;
 }
