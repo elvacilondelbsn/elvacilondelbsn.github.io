@@ -339,6 +339,7 @@ function renderTabs(){
   CUSTOM.forEach(c=>{ if(c.key==="estadisticas"||c.key==="equipos"||c.key==="dirigentes") return; mk(c.title, c.key===cur, ()=>{cur=c.key;}); });
   mk("Encuesta", cur==="__poll", ()=>{cur="__poll";});
   mk("Suscriptores", cur==="__subs", ()=>{cur="__subs";});
+  mk("Métricas", cur==="__metrics", ()=>{cur="__metrics";});
   mk("Equipos", cur==="__teams", ()=>{cur="__teams";});
   const nb=document.createElement("button");
   nb.className="tab"; nb.textContent="＋ Nueva sección"; nb.style.borderStyle="dashed";
@@ -451,10 +452,75 @@ async function delSub(id){
   catch(e){ alert("Error: "+e.message); }
 }
 
+let metricsDays=30;
+async function loadMetricsAdmin(){
+  hideForm(); $("fab-row").classList.add("hidden");
+  const L=$("list"); L.innerHTML='<div class="card" style="text-align:center"><span class="spin"></span> Cargando…</div>';
+  try{ const j=await api("/api/admin/metrics?days="+metricsDays); renderMetricsAdmin(j); }
+  catch(e){ L.innerHTML='<div class="empty">Error: '+escHtml(e.message)+'</div>'; }
+}
+function statCard(label,val){
+  return '<div class="card" style="margin:0;padding:14px;text-align:center"><div style="font-size:26px;font-weight:900;color:var(--yellow)">'+val+'</div>'+
+    '<div style="font-size:12px;color:var(--mut);margin-top:4px">'+label+'</div></div>';
+}
+function metricsTable(title,rows,note){
+  let h='<div class="card"><h2 style="margin:0 0 4px;font-size:18px">'+title+'</h2>';
+  if(note) h+='<p class="hint" style="margin:0 0 8px">'+note+'</p>';
+  if(!rows.length) h+='<div class="empty">Sin datos todavía.</div>';
+  else{
+    const max=Math.max.apply(null,rows.map(r=>r[1]).concat([1]));
+    rows.forEach(r=>{
+      const pct=Math.round(r[1]/max*100);
+      h+='<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px"><span>'+escHtml(r[0])+'</span><b>'+Number(r[1]).toLocaleString("es-PR")+'</b></div>'+
+      '<div style="height:8px;background:#0a1328;border-radius:99px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:var(--blue)"></div></div></div>';
+    });
+  }
+  return h+'</div>';
+}
+function renderMetricsAdmin(j){
+  const L=$("list");
+  const pd=j.perDay||[];
+  const last14=pd.slice(-14);
+  const maxV=Math.max.apply(null,last14.map(d=>d.visits).concat([1]));
+  const tDay=new Date(Date.now()-4*3600*1000).toISOString().slice(0,10);
+  const tRow=pd.find(d=>d.day===tDay);
+  const fmt=n=>Number(n||0).toLocaleString("es-PR");
+  let h='<div class="card"><div class="topbar"><h2 style="margin:0;font-size:18px">Tráfico del sitio</h2>'+
+    '<div style="display:flex;gap:6px">'+[7,30,90].map(d=>'<button class="btn btn-s" data-mdays="'+d+'" style="width:auto;padding:8px 12px;'+(d===j.days?'background:var(--yellow);color:var(--navy);border-color:var(--yellow);':'')+'">'+d+' días</button>').join("")+'</div></div>'+
+    '<p class="hint" style="margin:8px 0 0">Visitas y visitantes de los últimos '+j.days+' días. Sirve para mostrarle movimiento a un auspiciador. Los números son aproximados: algunos bloqueadores de anuncios impiden el conteo.</p></div>';
+  h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">';
+  h+=statCard("Visitas",fmt(j.total));
+  h+=statCard("Visitantes únicos",fmt(j.uniques));
+  h+=statCard("Hoy",fmt(tRow?tRow.visits:0));
+  h+='</div>';
+  h+='<div class="card"><h2 style="margin:0 0 12px;font-size:18px">Visitas por día</h2>';
+  if(!last14.length) h+='<div class="empty">Aún no hay visitas registradas.</div>';
+  else{
+    h+='<div style="display:flex;align-items:flex-end;gap:4px;height:128px">';
+    last14.forEach(d=>{
+      const pct=Math.round(d.visits/maxV*100);
+      const label=String(d.day).slice(5).replace("-","/");
+      h+='<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%" title="'+d.day+': '+d.visits+' visitas">'+
+        '<div style="width:100%;max-width:34px;height:'+pct+'%;min-height:'+(d.visits?4:0)+'px;background:var(--yellow);border-radius:4px 4px 0 0"></div>'+
+        '<div style="font-size:9px;color:var(--mut);margin-top:4px;white-space:nowrap">'+label+'</div></div>';
+    });
+    h+='</div>';
+  }
+  h+='</div>';
+  h+=metricsTable("Páginas más vistas",(j.pages||[]).map(p=>[(p.page==="/"?"Portada":p.page),p.n]));
+  h+=metricsTable("De dónde llegan",(j.refs||[]).map(p=>[p.ref,p.n]),"Las visitas directas o sin referido no aparecen aquí.");
+  h+=metricsTable("Dispositivos",(j.devices||[]).map(p=>[p.device,p.n]));
+  const ctry=(j.countries||[]).map(p=>[p.country,p.n]);
+  if(ctry.length) h+=metricsTable("Países",ctry);
+  L.innerHTML=h;
+  L.querySelectorAll("[data-mdays]").forEach(b=>b.onclick=()=>{metricsDays=parseInt(b.getAttribute("data-mdays"),10);loadMetricsAdmin();});
+}
+
 async function load(){
   hideForm();
   if(cur==="__poll") return loadPollAdmin();
   if(cur==="__subs") return loadSubsAdmin();
+  if(cur==="__metrics") return loadMetricsAdmin();
   if(cur==="__teams") return loadTeamsAdmin();
   if(cur==="estadisticas"){
     try{ await api("/api/admin/custom-sections",{method:"POST",body:JSON.stringify({title:"Estadísticas"})}); }
