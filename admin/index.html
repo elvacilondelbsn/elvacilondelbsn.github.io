@@ -214,6 +214,16 @@ const SECTIONS = {
     {k:"sort_order",label:"Orden (menor sale primero)",t:"number"},
     {k:"is_published",label:"Publicado",t:"check"}
   ]},
+  dirigentes: { label: "Dirigentes", fields: [
+    {k:"title",label:"Nombre del dirigente",t:"text",req:1,ph:"Ej: Carlos González"},
+    {k:"from",label:"Sale de",t:"text",meta:1,ph:"Ej: Gigantes de Carolina"},
+    {k:"to",label:"Llega a",t:"text",meta:1,ph:"Ej: Cangrejeros de Santurce (vacío = queda libre)"},
+    {k:"subtitle",label:"Fecha",t:"text",ph:"Ej: 29 SEP 2026"},
+    {k:"body",label:"Detalles",t:"textarea"},
+    {k:"image",label:"Foto",t:"image"},
+    {k:"sort_order",label:"Orden (menor sale primero)",t:"number"},
+    {k:"is_published",label:"Publicado",t:"check"}
+  ]},
   agencia_libre: { label: "Agencia Libre", fields: [
     {k:"title",label:"Nombre del jugador",t:"text",req:1},
     {k:"posicion",label:"Posición",t:"select",meta:1,opts:["PG","SG","SF","PF","C","Por definir"]},
@@ -233,7 +243,7 @@ const SECTIONS = {
     {k:"is_published",label:"Publicado",t:"check"}
   ]}
 };
-const ORDER = ["resultados","estadisticas","noticias","cambios","firmas","agencia_libre","franquicias"];
+const ORDER = ["resultados","estadisticas","noticias","cambios","firmas","dirigentes","agencia_libre","franquicias"];
 let CUSTOM = []; // secciones creadas por el cliente: [{key,title,items}]
 const GFIELDS = [
   {k:"title",label:"Titular",t:"text",req:1},
