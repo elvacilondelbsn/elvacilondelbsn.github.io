@@ -408,7 +408,6 @@ tr.lead .pos{color:var(--yellow)}
 @keyframes sponScroll{to{transform:translateX(-50%)}}
 .spon-marquee:hover .spon-mtrack{animation-play-state:paused}
 .spon-mtrack.paused{animation-play-state:paused}
-@media (prefers-reduced-motion:reduce){.spon-mtrack{animation:none}}
 @media(max-width:639px){.spon-card{height:92px;width:200px}.spon-mtrack{animation-duration:26s}}
 /* ---------- barra inferior fija ---------- */
 .btab{position:fixed;left:0;right:0;bottom:0;z-index:80;background:rgba(5,29,73,.93);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
@@ -1508,13 +1507,16 @@ function renderCustomSections(){
   box.addEventListener("touchstart",function(){ track.classList.add("paused"); },{passive:true});
   box.addEventListener("touchend",unpause);
   box.addEventListener("touchcancel",unpause);
+  /* Redes de seguridad: si el toque se interrumpe (cambio de app/pestaña) la
+     clase "paused" podía quedarse pegada y congelar la tira. */
+  document.addEventListener("visibilitychange",function(){ if(!document.hidden) unpause(); });
+  window.addEventListener("pageshow",unpause);
   /* Animación en píxeles exactos: se mide media tira y se mueve justo ese ancho.
      No usa translateX(-50%): en iPad ese porcentaje se calculaba al doble y la
      tira salía completa de pantalla dejando la franja vacía. */
   var pxStyle=document.getElementById("sponPxCss");
   if(!pxStyle){ pxStyle=document.createElement("style"); pxStyle.id="sponPxCss"; document.head.appendChild(pxStyle); }
   function tuneSpon(){
-    if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     var half=track.children[0]; if(!half||!half.children.length) return;
     var n=half.children.length;
     var cw=half.children[0].getBoundingClientRect().width;
