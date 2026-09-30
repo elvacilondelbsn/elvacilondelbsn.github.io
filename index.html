@@ -1554,6 +1554,14 @@ loadStats();
 cargarContenido().finally(()=>{
   renderScores(); renderNews(); renderCustomSections(); renderTrades(); renderRace(); renderTeams(); renderPoll(); renderMarquee(); observeRv();
 });
+/* Métricas de visitas: avisa al API una vez por carga de página. Silencioso, sin cookies. */
+(function(){
+  try{
+    if(!("fetch" in window)) return;
+    fetch(API_URL+"/api/visit",{method:"POST",headers:{"content-type":"application/json"},keepalive:true,
+      body:JSON.stringify({p:location.pathname||"/",r:document.referrer||""})}).catch(function(){});
+  }catch(e){}
+})();
 window.addEventListener("resize", ()=>{ fitFaRail(); });
 </script>
 <!-- ======= BARRA INFERIOR FIJA ======= -->
