@@ -402,7 +402,7 @@ tr.lead .pos{color:var(--yellow)}
 .spon-marquee{max-width:880px;margin:10px auto 0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
 .spon-mtrack{display:flex;width:max-content;animation:sponScroll 26s linear infinite}
 .spon-set{display:flex;gap:18px}
-.spon-half{display:flex;gap:18px;padding-right:18px}
+.spon-half{display:flex;gap:18px;padding-right:18px;flex:0 0 auto}
 .spon-card{background:#fff;border-radius:12px;height:96px;flex:0 0 auto;width:240px;display:flex;align-items:center;justify-content:center;padding:14px 20px;box-sizing:border-box;box-shadow:0 8px 22px rgba(0,0,0,.35)}
 .spon-card img{max-width:100%;max-height:62px;object-fit:contain}
 @keyframes sponScroll{to{transform:translateX(-50%)}}
@@ -1504,8 +1504,34 @@ function renderCustomSections(){
   track.innerHTML="";
   track.appendChild(makeHalf());
   track.appendChild(makeHalf());
+  function unpause(){ track.classList.remove("paused"); }
   box.addEventListener("touchstart",function(){ track.classList.add("paused"); },{passive:true});
-  box.addEventListener("touchend",function(){ track.classList.remove("paused"); });
+  box.addEventListener("touchend",unpause);
+  box.addEventListener("touchcancel",unpause);
+  /* Animación en píxeles exactos: se mide media tira y se mueve justo ese ancho.
+     No usa translateX(-50%): en iPad ese porcentaje se calculaba al doble y la
+     tira salía completa de pantalla dejando la franja vacía. */
+  var pxStyle=document.getElementById("sponPxCss");
+  if(!pxStyle){ pxStyle=document.createElement("style"); pxStyle.id="sponPxCss"; document.head.appendChild(pxStyle); }
+  function tuneSpon(){
+    if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var half=track.children[0]; if(!half||!half.children.length) return;
+    var n=half.children.length;
+    var cw=half.children[0].getBoundingClientRect().width;
+    if(!(cw>0)) return;
+    var cs=window.getComputedStyle(half);
+    var gap=parseFloat(cs.gap); gap=isNaN(gap)?18:gap;
+    var padR=parseFloat(cs.paddingRight); padR=isNaN(padR)?18:padR;
+    var shift=Math.round(n*cw+(n-1)*gap+padR);
+    var dur=Math.max(8,shift/89.3).toFixed(2);
+    pxStyle.textContent="@keyframes sponScrollPx{to{transform:translateX(-"+shift+"px)}}";
+    track.style.animationName="sponScrollPx";
+    track.style.animationDuration=dur+"s";
+  }
+  tuneSpon();
+  window.addEventListener("load",tuneSpon);
+  var sponRz=null;
+  window.addEventListener("resize",function(){ clearTimeout(sponRz); sponRz=setTimeout(tuneSpon,250); });
 })();
     /* ---------- scrollspy barra inferior ---------- */
 (function(){
