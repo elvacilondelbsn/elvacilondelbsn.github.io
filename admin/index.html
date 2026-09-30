@@ -336,7 +336,7 @@ function renderTabs(){
     t.appendChild(b);
   };
   ORDER.forEach(k=>mk(secDef(k).label, k===cur, ()=>{cur=k;}));
-  CUSTOM.forEach(c=>{ if(c.key==="estadisticas"||c.key==="equipos") return; mk(c.title, c.key===cur, ()=>{cur=c.key;}); });
+  CUSTOM.forEach(c=>{ if(c.key==="estadisticas"||c.key==="equipos"||c.key==="dirigentes") return; mk(c.title, c.key===cur, ()=>{cur=c.key;}); });
   mk("Encuesta", cur==="__poll", ()=>{cur="__poll";});
   mk("Suscriptores", cur==="__subs", ()=>{cur="__subs";});
   mk("Equipos", cur==="__teams", ()=>{cur="__teams";});
@@ -460,6 +460,10 @@ async function load(){
     try{ await api("/api/admin/custom-sections",{method:"POST",body:JSON.stringify({title:"Estadísticas"})}); }
     catch(e){ /* si ya existe, seguimos */ }
   }
+  if(cur==="dirigentes"){
+    try{ await api("/api/admin/custom-sections",{method:"POST",body:JSON.stringify({title:"Dirigentes"})}); }
+    catch(e){ /* si ya existe, seguimos */ }
+  }
   $("fab-row").classList.remove("hidden");
   const L=$("list"); L.innerHTML='<div class="card" style="text-align:center"><span class="spin"></span> Cargando…</div>';
   try{
@@ -473,10 +477,36 @@ function imgUrl(u){
   return u.startsWith("/api/") ? API+u : u;
 }
 
+const COACHES_2026=[
+ ["Vaqueros de Bayamón","Christian Dalmau"],
+ ["Cangrejeros de Santurce","Carlos González"],
+ ["Criollos de Caguas","Wilhelmus Caanen"],
+ ["Gigantes de Carolina","Juan Cardona"],
+ ["Osos de Manatí","Iván Ríos"],
+ ["Mets de Guaynabo","Jorge Rincón"],
+ ["Atléticos de San Germán","Eddie Casiano"],
+ ["Capitanes de Arecibo","Por anunciar"],
+ ["Santeros de Aguada","Rafael “Pachy” Cruz"],
+ ["Leones de Ponce","Carlos Rivera"],
+ ["Indios de Mayagüez","Iván “Pipo” Vélez"],
+ ["Piratas de Quebradillas","Brad Greenberg"]
+];
+function coachesPanel(){
+  const rows=COACHES_2026.map(c=>
+    '<div style="display:flex;justify-content:space-between;gap:10px;padding:8px 2px;border-bottom:1px solid #1b2745">'+
+    '<span style="color:#9fb0cc;font-size:13px">'+c[0]+'</span>'+
+    '<b style="font-size:13px;text-align:right;'+(c[1]==="Por anunciar"?"color:#f7e012":"color:#fff")+'">'+c[1]+'</b></div>'
+  ).join("");
+  return '<div class="card" style="margin-bottom:14px;border:1px solid #f7e01255">'+
+    '<div style="font-size:11px;letter-spacing:2px;color:#f7e012;margin-bottom:2px">DIRIGENTES ACTUALES · TEMP. 2026</div>'+
+    '<div style="font-size:12px;color:#9fb0cc;margin-bottom:8px">Referencia rápida. Para anunciar un cambio, usa “+ Nuevo”.</div>'+
+    rows+'</div>';
+}
 function renderList(){
   const L=$("list");
-  if(!cache.length){ L.innerHTML='<div class="empty">No hay contenido aquí todavía.<br>Toca "+ Nuevo" para agregar.</div>'; return; }
-  L.innerHTML="";
+  const panel=(cur==="dirigentes")?coachesPanel():"";
+  if(!cache.length){ L.innerHTML=panel+'<div class="empty">No hay movimientos publicados todavía.<br>Toca "+ Nuevo" para anunciar un cambio.</div>'; return; }
+  L.innerHTML=panel;
   cache.forEach(it=>{
     const d=document.createElement("div"); d.className="item";
     const im = imgUrl(it.image_url);
