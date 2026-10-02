@@ -562,29 +562,56 @@ const COACHES_2026=[
 ];
 const COACHES_SEC="dirigentes-actuales"; // sección interna: la lista editable vive en el API (borrador, no sale en el sitio)
 let coachRows=[]; // [{id,title(equipo),subtitle(dirigente),sort_order}]
+let coachRowsLoading=null; // candado: evita siembras duplicadas si la pestaña se abre dos veces seguidas
 async function loadCoachRows(){
-  coachRows=[];
-  try{
-    const j=await api("/api/admin/content?section="+COACHES_SEC);
-    coachRows=(j.items||[]).slice().sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
-  }catch(e){ coachRows=[]; }
-  // Siembra los equipos que falten (primera vez o siembra incompleta). Quedan en borrador: no salen en el sitio.
-  const have=new Set(coachRows.map(c=>String(c.title||"").toLowerCase()));
-  const missing=COACHES_2026.filter(c=>!have.has(String(c[0]).toLowerCase()));
-  for(const c of missing){
+  if(coachRowsLoading){ try{ await coachRowsLoading; }catch(e){} return; }
+  coachRowsLoading=(async()=>{
+    coachRows=[];
     try{
-      await api("/api/content",{method:"POST",body:JSON.stringify({
-        section:COACHES_SEC,title:c[0],subtitle:c[1],
-        sort_order:COACHES_2026.findIndex(x=>x[0]===c[0]),is_published:0
-      })});
-    }catch(e){ /* sigue con el próximo */ }
-  }
-  if(missing.length){
-    try{
-      const j2=await api("/api/admin/content?section="+COACHES_SEC);
-      coachRows=(j2.items||[]).slice().sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
-    }catch(e){}
-  }
+      const j=await api("/api/admin/content?section="+COACHES_SEC);
+      coachRows=(j.items||[]).slice().sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
+    }catch(e){ coachRows=[]; }
+    // Limpieza: si un equipo aparece más de una vez, conserva la entrada más
+    // reciente (preserva cualquier Editar manual) y borra las demás.
+    const byTeam={};
+    coachRows.forEach(c=>{
+      const k=String(c.title||"").toLowerCase();
+      (byTeam[k]=byTeam[k]||[]).push(c);
+    });
+    let cleaned=false;
+    for(const k in byTeam){
+      const g=byTeam[k];
+      if(g.length<2) continue;
+      g.sort((a,b)=>String(b.updated_at||"").localeCompare(String(a.updated_at||""))||b.id-a.id);
+      for(let i=1;i<g.length;i++){
+        try{ await api("/api/content/"+g[i].id,{method:"DELETE"}); cleaned=true; }catch(e){}
+      }
+    }
+    if(cleaned){
+      try{
+        const jd=await api("/api/admin/content?section="+COACHES_SEC);
+        coachRows=(jd.items||[]).slice().sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
+      }catch(e){}
+    }
+    // Siembra los equipos que falten (primera vez o siembra incompleta). Quedan en borrador: no salen en el sitio.
+    const have=new Set(coachRows.map(c=>String(c.title||"").toLowerCase()));
+    const missing=COACHES_2026.filter(c=>!have.has(String(c[0]).toLowerCase()));
+    for(const c of missing){
+      try{
+        await api("/api/content",{method:"POST",body:JSON.stringify({
+          section:COACHES_SEC,title:c[0],subtitle:c[1],
+          sort_order:COACHES_2026.findIndex(x=>x[0]===c[0]),is_published:0
+        })});
+      }catch(e){ /* sigue con el próximo */ }
+    }
+    if(missing.length){
+      try{
+        const j2=await api("/api/admin/content?section="+COACHES_SEC);
+        coachRows=(j2.items||[]).slice().sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
+      }catch(e){}
+    }
+  })();
+  try{ await coachRowsLoading; }finally{ coachRowsLoading=null; }
 }
 async function editCoach(id){
   const row=coachRows.find(c=>c.id===id);
