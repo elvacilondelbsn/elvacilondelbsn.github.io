@@ -336,7 +336,7 @@ function renderTabs(){
     t.appendChild(b);
   };
   ORDER.forEach(k=>mk(secDef(k).label, k===cur, ()=>{cur=k;}));
-  CUSTOM.forEach(c=>{ if(c.key==="estadisticas"||c.key==="equipos"||c.key==="dirigentes") return; mk(c.title, c.key===cur, ()=>{cur=c.key;}); });
+  CUSTOM.forEach(c=>{ if(c.key==="estadisticas"||c.key==="equipos"||c.key==="dirigentes"||c.key==="dirigentes-actuales") return; mk(c.title, c.key===cur, ()=>{cur=c.key;}); });
   mk("Encuesta", cur==="__poll", ()=>{cur="__poll";});
   mk("Suscriptores", cur==="__subs", ()=>{cur="__subs";});
   mk("Métricas", cur==="__metrics", ()=>{cur="__metrics";});
@@ -529,6 +529,9 @@ async function load(){
   if(cur==="dirigentes"){
     try{ await api("/api/admin/custom-sections",{method:"POST",body:JSON.stringify({title:"Dirigentes"})}); }
     catch(e){ /* si ya existe, seguimos */ }
+    try{ await api("/api/admin/custom-sections",{method:"POST",body:JSON.stringify({title:"Dirigentes actuales"})}); }
+    catch(e){ /* si ya existe, seguimos */ }
+    await loadCoachRows();
   }
   $("fab-row").classList.remove("hidden");
   const L=$("list"); L.innerHTML='<div class="card" style="text-align:center"><span class="spin"></span> Cargando…</div>';
@@ -557,22 +560,91 @@ const COACHES_2026=[
  ["Indios de Mayagüez","Iván “Pipo” Vélez"],
  ["Piratas de Quebradillas","Brad Greenberg"]
 ];
+const COACHES_SEC="dirigentes-actuales"; // sección interna: la lista editable vive en el API (borrador, no sale en el sitio)
+let coachRows=[]; // [{id,title(equipo),subtitle(dirigente),sort_order}]
+async function loadCoachRows(){
+  coachRows=[];
+  try{
+    const j=await api("/api/admin/content?section="+COACHES_SEC);
+    coachRows=(j.items||[]).slice().sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
+  }catch(e){ coachRows=[]; }
+  // Siembra los equipos que falten (primera vez o siembra incompleta). Quedan en borrador: no salen en el sitio.
+  const have=new Set(coachRows.map(c=>String(c.title||"").toLowerCase()));
+  const missing=COACHES_2026.filter(c=>!have.has(String(c[0]).toLowerCase()));
+  for(const c of missing){
+    try{
+      await api("/api/content",{method:"POST",body:JSON.stringify({
+        section:COACHES_SEC,title:c[0],subtitle:c[1],
+        sort_order:COACHES_2026.findIndex(x=>x[0]===c[0]),is_published:0
+      })});
+    }catch(e){ /* sigue con el próximo */ }
+  }
+  if(missing.length){
+    try{
+      const j2=await api("/api/admin/content?section="+COACHES_SEC);
+      coachRows=(j2.items||[]).slice().sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
+    }catch(e){}
+  }
+}
+async function editCoach(id){
+  const row=coachRows.find(c=>c.id===id);
+  if(!row) return;
+  const actual=row.subtitle||"Por anunciar";
+  const nuevo=prompt("Dirigente de "+row.title+":", actual==="Por anunciar"?"":actual);
+  if(nuevo===null) return;
+  const val=nuevo.trim()||"Por anunciar";
+  if(val===actual) return;
+  try{
+    await api("/api/content/"+id,{method:"PUT",body:JSON.stringify({subtitle:val})});
+    await loadCoachRows(); renderList();
+  }catch(e){ alert("Error: "+e.message); }
+}
+// Al publicar un cambio de dirigente, actualiza la lista automáticamente:
+// el equipo de "Llega a" recibe al dirigente nuevo y el de "Sale de" (si era él) queda "Por anunciar".
+async function syncCoachList(coachName,meta){
+  const nombre=String(coachName||"").trim();
+  if(!nombre||!coachRows.length) return;
+  const to=String(meta.to||"").trim().toLowerCase();
+  const from=String(meta.from||"").trim().toLowerCase();
+  let changed=false;
+  for(const row of coachRows){
+    const team=String(row.title||"").toLowerCase();
+    if(to&&team===to&&row.subtitle!==nombre){
+      await api("/api/content/"+row.id,{method:"PUT",body:JSON.stringify({subtitle:nombre})});
+      changed=true;
+    }else if(from&&team===from&&row.subtitle===nombre){
+      await api("/api/content/"+row.id,{method:"PUT",body:JSON.stringify({subtitle:"Por anunciar"})});
+      changed=true;
+    }
+  }
+  if(changed) await loadCoachRows();
+}
 function coachesPanel(){
-  const rows=COACHES_2026.map(c=>
-    '<div style="display:flex;justify-content:space-between;gap:10px;padding:8px 2px;border-bottom:1px solid #1b2745">'+
-    '<span style="color:#9fb0cc;font-size:13px">'+c[0]+'</span>'+
-    '<b style="font-size:13px;text-align:right;'+(c[1]==="Por anunciar"?"color:#f7e012":"color:#fff")+'">'+c[1]+'</b></div>'
-  ).join("");
+  const rows=coachRows.map(c=>{
+    const nombre=c.subtitle||"Por anunciar";
+    const pend=nombre==="Por anunciar";
+    return '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 2px;border-bottom:1px solid #1b2745">'+
+    '<span style="color:#9fb0cc;font-size:13px">'+escHtml(c.title)+'</span>'+
+    '<span style="display:flex;align-items:center;gap:8px;flex:none">'+
+    '<b style="font-size:13px;text-align:right;'+(pend?"color:#f7e012":"color:#fff")+'">'+escHtml(nombre)+'</b>'+
+    '<button class="ibtn" data-coach="'+c.id+'">Editar</button></span></div>';
+  }).join("");
   return '<div class="card" style="margin-bottom:14px;border:1px solid #f7e01255">'+
     '<div style="font-size:11px;letter-spacing:2px;color:#f7e012;margin-bottom:2px">DIRIGENTES ACTUALES · TEMP. 2026</div>'+
-    '<div style="font-size:12px;color:#9fb0cc;margin-bottom:8px">Referencia rápida. Para anunciar un cambio, usa “+ Nuevo”.</div>'+
+    '<div style="font-size:12px;color:#9fb0cc;margin-bottom:8px">Toca <b>Editar</b> en un equipo para anotar a su dirigente. Al publicar un cambio con “Llega a”, esta lista se actualiza sola.</div>'+
     rows+'</div>';
+}
+function wireCoachButtons(L){
+  L.querySelectorAll("[data-coach]").forEach(b=>{
+    b.onclick=()=>editCoach(parseInt(b.getAttribute("data-coach"),10));
+  });
 }
 function renderList(){
   const L=$("list");
   const panel=(cur==="dirigentes")?coachesPanel():"";
-  if(!cache.length){ L.innerHTML=panel+'<div class="empty">No hay movimientos publicados todavía.<br>Toca "+ Nuevo" para anunciar un cambio.</div>'; return; }
+  if(!cache.length){ L.innerHTML=panel+'<div class="empty">No hay movimientos publicados todavía.<br>Toca "+ Nuevo" para anunciar un cambio.</div>'; wireCoachButtons(L); return; }
   L.innerHTML=panel;
+  wireCoachButtons(L);
   cache.forEach(it=>{
     const d=document.createElement("div"); d.className="item";
     const im = imgUrl(it.image_url);
@@ -679,6 +751,9 @@ $("btn-save").onclick=async ()=>{
     okmsg("Guardando…");
     if(editingId) await api("/api/content/"+editingId,{method:"PUT",body:JSON.stringify(body)});
     else await api("/api/content",{method:"POST",body:JSON.stringify(body)});
+    if(cur==="dirigentes"&&body.is_published){
+      try{ await syncCoachList(body.title,meta); }catch(e){ /* la lista se puede editar a mano */ }
+    }
     okmsg("Guardado."); hideForm(); load();
   }catch(e){ err("form-err",e.message); okmsg(""); }
 };
