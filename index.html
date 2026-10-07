@@ -774,9 +774,15 @@ let TRADES = [
    det:"Tres veces campeón del BSN, fue anunciado como nuevo dirigente de Aguada para la temporada 2026.",
    url:"https://www.elnuevodia.com/deportes/baloncesto/notas/bsn-pachy-cruz-dirigira-a-los-santeros-de-aguada/", src:"El Nuevo Día"}
 ];
-const tlogo = t => LOGOS[t]
-  ? `<img src="${LOGOS[t]}" alt="${esc(t)}" loading="lazy">`
-  : `<span class="tlogo-none">${esc(t.split(" ").map(w=>w[0]).join("").slice(0,3).toUpperCase())}</span>`;
+const logoKey = t => {
+  if(!t) return null;
+  const norm = x => String(x).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();
+  const n = norm(t), keys = Object.keys(LOGOS);
+  return keys.find(k => norm(k) === n) || keys.find(k => norm(k).includes(n) || n.includes(norm(k))) || null;
+};
+const tlogo = t => { const k = logoKey(t);
+  return k ? `<img src="${LOGOS[k]}" alt="${esc(t)}" loading="lazy">`
+  : `<span class="tlogo-none">${esc(String(t||"").split(" ").map(w=>w[0]).join("").slice(0,3).toUpperCase())}</span>`; };
 let tradeFilter = "ALL";
 let faPos = "ALL";
 const FA_POSITIONS = [["ALL","TODOS"],["PG","PG"],["SG","SG"],["SF","SF"],["PF","PF"],["C","C"]];
@@ -907,7 +913,7 @@ function tradeCard(t){
   if(t.tipo==="CAMBIO"){
     return `<article class="trade rv">${head}
       <div class="swap"><div class="swap-eyebrow">QUIÉN POR QUIÉN</div><div class="swap-grid">
-        <div class="swap-side">${tlogo(t.de)}<div class="swap-team">${esc(t.de).toUpperCase()}</div><div class="swap-get">RECIBE</div><span class="swap-pick"><small>${esc(t.retT)}</small>${esc(t.ret)}</span></div>
+        <div class="swap-side">${tlogo(t.de)}<div class="swap-team">${esc(t.de).toUpperCase()}</div><div class="swap-get">RECIBE</div>${t.retT==="JUGADOR"?`<div class="swap-name">${esc(t.ret)}</div>`:`<span class="swap-pick"><small>${esc(t.retT)}</small>${esc(t.ret)}</span>`}</div>
         <div class="swap-mid">${SWAP_SVG}</div>
         <div class="swap-side">${tlogo(t.a)}<div class="swap-team">${esc(t.a).toUpperCase()}</div><div class="swap-get">RECIBE</div><div class="swap-name">${esc(t.jug)}</div></div>
       </div></div>${foot}</article>`;
