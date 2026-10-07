@@ -197,10 +197,12 @@ const SECTIONS = {
     {k:"is_published",label:"Publicado",t:"check"}
   ]},
   cambios: { label: "Cambios", fields: [
-    {k:"title",label:"Título del cambio",t:"text",req:1,ph:"Ej: Criollos adquieren a…"},
-    {k:"from",label:"Sale de",t:"text",meta:1,ph:"Ej: Cangrejeros de Santurce"},
-    {k:"to",label:"Llega a",t:"text",meta:1,ph:"Ej: Criollos de Caguas"},
-    {k:"body",label:"Detalles",t:"textarea"},
+    {k:"title",label:"Jugador",t:"text",req:1,ph:"Ej: Juan Pérez (lo recibe el equipo de “Llega a”)"},
+    {k:"from",label:"Sale de (equipo)",t:"text",meta:1,ph:"Ej: Cangrejeros de Santurce"},
+    {k:"to",label:"Llega a (equipo)",t:"text",meta:1,ph:"Ej: Criollos de Caguas"},
+    {k:"retT",label:"A cambio recibe: tipo",t:"select",meta:1,opts:["JUGADOR","SORTEO","DERECHOS","DINERO","OTRO"]},
+    {k:"ret",label:"A cambio recibe: detalle",t:"text",meta:1,ph:"Ej: Pedro Martínez o 1ra ronda 2027"},
+    {k:"body",label:"Detalles / por qué",t:"textarea"},
     {k:"image",label:"Foto",t:"image"},
     {k:"sort_order",label:"Orden (menor sale primero)",t:"number"},
     {k:"is_published",label:"Publicado",t:"check"}
